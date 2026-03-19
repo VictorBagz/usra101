@@ -396,6 +396,41 @@ p {
     }
 }
 
+/* Extra-small screens — iPhone 4S (320px), old Androids */
+@media(max-width: 360px) {
+    .hero {
+        padding-top: 68px;
+        padding-bottom: 40px;
+    }
+    .hero-content {
+        padding: 20px 1rem 16px;
+    }
+    .hero h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+    .hero p {
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin-bottom: 1.25rem;
+        /* Limit paragraph length so it doesn't dominate the entire screen */
+        display: -webkit-box;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .hero-buttons {
+        margin-top: 1rem;
+        gap: 0.6rem;
+        width: 100%;
+    }
+    .hero-buttons .btn {
+        flex: 1 1 120px;
+        padding: 0.65rem 0.75rem;
+        font-size: 0.88rem;
+    }
+}
+
 /* ======== CHAIRMAN SECTION ======== */
 #chairman { text-align: left; }
 .chairman-img img { 
