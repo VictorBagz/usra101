@@ -141,7 +141,7 @@ p {
     letter-spacing: 0.01em;
 }
 
-/* Desktop menu — sits alongside navbar, fixed to top */
+/* Desktop menu — fixed overlay, ABOVE navbar so it receives pointer events */
 .nav-menu {
     position: fixed;
     top: 0;
@@ -151,10 +151,10 @@ p {
     align-items: center;
     justify-content: flex-end;
     padding: 0 2rem;
-    z-index: 999;
-    pointer-events: none;
+    z-index: 1001; /* above #navbar (1000) so clicks aren't blocked */
+    pointer-events: none; /* container doesn't block clicks on page */
 }
-.nav-menu > * { pointer-events: auto; }
+.nav-menu > * { pointer-events: auto; } /* but children are fully interactive */
 .nav-links {
     display: flex;
     list-style: none;
@@ -658,25 +658,34 @@ footer .container {
         display: flex;
         flex-direction: column;
         padding: 0;
-        padding-top: 64px; /* space for the navbar header */
         gap: 0;
         overflow-y: auto;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: -4px 0 30px rgba(0,0,0,0.4);
-        pointer-events: auto;
+        pointer-events: auto; /* override desktop pointer-events:none */
     }
     .nav-menu.active { right: 0; }
 
-    /* Nav links — grows to fill available space */
+    /* Drawer header strip */
+    .nav-menu::before {
+        content: '';
+        display: block;
+        flex-shrink: 0;
+        height: 64px;
+        background: linear-gradient(135deg, var(--primary-red), #8b0000);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Nav links — no independent scroll, parent drawer scrolls */
     .nav-links {
         flex-direction: column;
         gap: 0;
         width: 100%;
-        flex-grow: 1;
+        flex-shrink: 0;
         overflow: visible;
-        padding: 8px 0;
+        padding: 12px 0;
         margin: 0;
     }
     .nav-links li { width: 100%; }
