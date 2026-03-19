@@ -416,6 +416,7 @@ p {
         /* Limit paragraph length so it doesn't dominate the entire screen */
         display: -webkit-box;
         -webkit-line-clamp: 6;
+        line-clamp: 6;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
