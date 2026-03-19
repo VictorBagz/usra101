@@ -141,20 +141,14 @@ p {
     letter-spacing: 0.01em;
 }
 
-/* Desktop menu — fixed overlay, ABOVE navbar so it receives pointer events */
+/* Desktop menu */
 .nav-menu {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 80px;
+    flex-grow: 1;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 0 2rem;
-    z-index: 1001; /* above #navbar (1000) so clicks aren't blocked */
-    pointer-events: none; /* container doesn't block clicks on page */
+    gap: 1.5rem;
 }
-.nav-menu > * { pointer-events: auto; } /* but children are fully interactive */
 .nav-links {
     display: flex;
     list-style: none;
@@ -331,7 +325,8 @@ p {
 
 /* ======== HERO SECTION ======== */
 .hero {
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100svh; /* uses small viewport height on mobile — excludes browser chrome */
     position: relative;
     color: white;
     display: flex;
@@ -368,8 +363,8 @@ p {
 @media(max-width: 480px) {
     .hero {
         align-items: flex-start;
-        padding-top: 100px;
-        padding-bottom: 80px;
+        padding-top: 80px;
+        padding-bottom: 48px;
     }
     
     .hero-content {
@@ -377,8 +372,7 @@ p {
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
-        min-height: auto;
-        padding: 40px 2rem 100px 2rem;
+        padding: 32px 1.25rem 24px;
     }
     
     .hero h1 {
@@ -387,8 +381,18 @@ p {
     }
     
     .hero-buttons {
-        padding-bottom: 2rem;
         margin-top: 1.5rem;
+        padding-bottom: 0.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+        width: 100%;
+    }
+    .hero-buttons .btn {
+        margin: 0;
+        flex: 1 1 140px;
+        text-align: center;
     }
 }
 
@@ -659,12 +663,12 @@ footer .container {
         flex-direction: column;
         padding: 0;
         gap: 0;
+        /* KEY FIX: allow drawer to scroll so dropdown items are reachable */
         overflow-y: auto;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: -4px 0 30px rgba(0,0,0,0.4);
-        pointer-events: auto; /* override desktop pointer-events:none */
     }
     .nav-menu.active { right: 0; }
 
@@ -808,14 +812,14 @@ footer .container {
     .hero {
         align-items: flex-start;
         padding-top: 64px;
+        padding-bottom: 48px; /* ensure buttons never clip under next section */
     }
     .hero-content {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 50vh;
-        padding: 40px 1.5rem;
+        padding: 40px 1.5rem 24px;
     }
     .hero h1 { font-size: 2.2rem; }
     .hero p {
@@ -823,6 +827,15 @@ footer .container {
         padding: 0 1rem;
         text-align: justify;
     }
+    .hero-buttons {
+        margin-top: 1.5rem;
+        padding-bottom: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    .hero-buttons .btn { margin: 0; }
     .chairman-text { padding-right: 0; }
     .chairman-text p { text-align: justify; padding: 0 1rem; }
 }
