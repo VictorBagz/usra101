@@ -123,10 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const updateCount = () => {
           current += increment;
           if (current < target) {
-            counter.innerText = Math.ceil(current);
+            counter.innerText = '+' + Math.ceil(current);
             setTimeout(updateCount, 10);
           } else {
-            counter.innerText = target;
+            counter.innerText = '+' + target;
           }
         };
         updateCount();
