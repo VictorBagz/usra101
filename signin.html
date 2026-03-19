@@ -14,34 +14,50 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header id="navbar">
-        <div class="container">
+<header id="navbar">
+    <div class="container">
+        <div class="nav-brand">
             <a href="index.html" class="logo">
-                <img src="photos/logos/usraLogo.png" alt="USRA Logo" style="height: 40px; width: auto;">
+                <img src="photos/logos/usraLogo.png" alt="USRA Logo" class="nav-logo">
+                <span class="nav-title">Uganda Schools Rugby Association</span>
             </a>
-            <nav class="nav-menu">
-                <ul class="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="index.html#about">About Us</a></li>
-                    <li><a href="signin.html">Sign In</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="index.html#leadership">Leadership</a></li>
-                            <li><a href="index.html#workplan">Workplan</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </nav>
-            <a href="registration.html" class="btn btn-secondary">Register Now</a>
-            <div class="hamburger">
-                <i class="fas fa-bars"></i>
-            </div>
         </div>
-    </header>
+        <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+    </div>
+</header>
+
+<nav class="nav-menu" role="navigation" aria-label="Main navigation">
+    <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="index.html#about" class="nav-link">About Us</a></li>
+        <li><a href="events.html" class="nav-link">Events</a></li>
+        <li><a href="index.html#gallery" class="nav-link">Gallery</a></li>
+        <li><a href="news.html" class="nav-link">News</a></li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle nav-link" aria-expanded="false">
+                More <i class="fas fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="leadership.html"><i class="fas fa-users"></i> Leadership</a></li>
+                <li><a href="workplan.html"><i class="fas fa-tasks"></i> Workplan</a></li>
+            </ul>
+        </li>
+    </ul>
+    <div class="nav-actions">
+        <a href="signin.html" class="btn btn-outline-light">Sign In</a>
+        <a href="registration.html" class="btn btn-secondary">Register</a>
+    </div>
+</nav>
+
+<div class="nav-backdrop" aria-hidden="true"></div>
 
     <main>
         <section class="signin-section">

@@ -19,19 +19,46 @@
 </head>
 <body>
 
-    <header id="navbar">
-        <div class="container">
-            <div class="nav-left">
-                <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i><span>Back to Dashboard</span></a>
-            </div>
-            <div class="nav-center">
-                <h1 class="page-title">Player Registration</h1>
-            </div>
-            <div class="nav-right">
-                <!-- Placeholder for balance if needed -->
-            </div>
+<header id="navbar">
+    <div class="container">
+        <div class="nav-brand">
+            <a href="index.html" class="logo">
+                <img src="photos/logos/usraLogo.png" alt="USRA Logo" class="nav-logo">
+                <span class="nav-title">Uganda Schools Rugby Association</span>
+            </a>
         </div>
-    </header>
+        <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+    </div>
+</header>
+
+<nav class="nav-menu" role="navigation" aria-label="Main navigation">
+    <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="index.html#about" class="nav-link">About Us</a></li>
+        <li><a href="events.html" class="nav-link">Events</a></li>
+        <li><a href="index.html#gallery" class="nav-link">Gallery</a></li>
+        <li><a href="news.html" class="nav-link">News</a></li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle nav-link" aria-expanded="false">
+                More <i class="fas fa-chevron-down"></i>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="leadership.html"><i class="fas fa-users"></i> Leadership</a></li>
+                <li><a href="workplan.html"><i class="fas fa-tasks"></i> Workplan</a></li>
+            </ul>
+        </li>
+    </ul>
+    <div class="nav-actions">
+        <a href="signin.html" class="btn btn-outline-light">Sign In</a>
+        <a href="registration.html" class="btn btn-secondary">Register</a>
+    </div>
+</nav>
+
+<div class="nav-backdrop" aria-hidden="true"></div>
 
     <main>
         <section class="reg-hero">
@@ -165,6 +192,7 @@
     <!-- App Scripts -->
     <script src="createClient.js"></script>
     <script src="errorHandler.js"></script>
+    <script src="script.js"></script>
     <script src="player-registration.js"></script>
 
     <!-- Error Handling Styles -->

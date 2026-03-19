@@ -141,14 +141,20 @@ p {
     letter-spacing: 0.01em;
 }
 
-/* Desktop menu */
+/* Desktop menu — sits alongside navbar, fixed to top */
 .nav-menu {
-    flex-grow: 1;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 1.5rem;
+    padding: 0 2rem;
+    z-index: 999;
+    pointer-events: none;
 }
+.nav-menu > * { pointer-events: auto; }
 .nav-links {
     display: flex;
     list-style: none;
@@ -652,34 +658,25 @@ footer .container {
         display: flex;
         flex-direction: column;
         padding: 0;
+        padding-top: 64px; /* space for the navbar header */
         gap: 0;
-        /* KEY FIX: allow drawer to scroll so dropdown items are reachable */
         overflow-y: auto;
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: -4px 0 30px rgba(0,0,0,0.4);
+        pointer-events: auto;
     }
     .nav-menu.active { right: 0; }
 
-    /* Drawer header strip */
-    .nav-menu::before {
-        content: '';
-        display: block;
-        flex-shrink: 0;
-        height: 64px;
-        background: linear-gradient(135deg, var(--primary-red), #8b0000);
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    /* Nav links — no independent scroll, parent drawer scrolls */
+    /* Nav links — grows to fill available space */
     .nav-links {
         flex-direction: column;
         gap: 0;
         width: 100%;
-        flex-shrink: 0;
+        flex-grow: 1;
         overflow: visible;
-        padding: 12px 0;
+        padding: 8px 0;
         margin: 0;
     }
     .nav-links li { width: 100%; }
