@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Tournaments Enrollment System</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="apple-touch-icon" href="photos/logos/usraLogo.png">
+    <link rel="shortcut icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: #c00;
+            border-bottom: 3px solid #c00;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        /* Enroll Button */
+        .enroll-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        #enrollBtn {
+            padding: 15px 40px;
+            background: #c00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #enrollBtn:hover {
+            background: #a00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(204, 0, 0, 0.3);
+        }
+
+        /* Tournament Overlay */
+        #tournamentOverlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .overlay-content {
+            background: white;
+            margin: 50px auto;
+            max-width: 1200px;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .overlay-header {
+            background: #c00;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .overlay-header h2 {
+            font-size: 1.8rem;
+        }
+
+        .tournament-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+        }
+
+        .overlay-body {
+            padding: 30px;
+        }
+
+        .tournament-category {
+            margin-bottom: 30px;
+        }
+
+        .category-header {
+            font-size: 1.4rem;
+            color: #c00;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #c00;
+        }
+
+        .tournament-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .tournament-card {
+            background: #fff8f8;
+            border: 2px solid #ffdddd;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .tournament-card:hover {
+            border-color: #c00;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(204, 0, 0, 0.2);
+        }
+
+        .tournament-header h3 {
+            color: #c00;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .enrolled-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .tournament-info p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .tournament-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #888;
+            margin: 15px 0;
+        }
+
+        .category-selector {
+            margin-bottom: 15px;
+        }
+
+        .category-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .category-selector select:focus {
+            outline: none;
+            border-color: #c00;
+        }
+
+        .zone-tournaments,
+        .region-tournaments,
+        .international-tournaments {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: #c00;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #a00;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* Player Selection Section */
+        #playerSelectionSection {
+            display: none;
+        }
+
+        .selection-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .selection-header h3 {
+            color: #c00;
+            margin-bottom: 10px;
+        }
+
+        .player-selection-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .player-checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .player-checkbox-item:last-child {
+            border-bottom: none;
+        }
+
+        .player-checkbox-item input {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .player-info {
+            flex-grow: 1;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .player-details {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .selection-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Loading */
+        .loading-placeholder {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid rgba(204, 0, 0, 0.1);
+            border-left-color: #c00;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Error/Success Messages */
+        .message-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .message-toast.error {
+            background: #dc3545;
+        }
+
+        .message-toast.success {
+            background: #28a745;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* School Profile */
+        .mock-profile {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+        }
+
+        .mock-profile h3 {
+            color: #c00;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .profile-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .profile-item strong {
+            color: #495057;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-item span {
+            color: #212529;
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: capitalize;
+        }
+
+        .status-badge.active {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-badge.inactive {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .error-text {
+            color: #dc3545;
+            font-style: italic;
+        }
+
+        [data-field] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hidden profile data -->
+    <div style="display: none;">
+        <span data-field="centerNumber"></span>
+        <span data-field="schoolId"></span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-trophy"></i> School Tournaments Enrollment System</h1>
+            <p>Enroll your school's players in various tournaments</p>
+        </header>
+
+        <div class="mock-profile" id="schoolProfile">
+            <h3><i class="fas fa-school"></i> School Profile</h3>
+            <div id="profileLoading">
+                <div class="spinner"></div>
+                <p>Loading school profile...</p>
+            </div>
+            <div id="profileContent" style="display: none;">
+                <!-- Profile data will be inserted here by JavaScript -->
+            </div>
+        </div>
+
+        <div class="enroll-section">
+    <button id="enrollBtn">
+        <i class="fas fa-user-plus"></i> Enroll in Tournaments
+    </button>
+</div>
+    </div>
+
+    <!-- Tournament Overlay -->
+    <div id="tournamentOverlay">
+        <div class="overlay-content">
+            <div class="overlay-header">
+                <h2>Available Tournaments</h2>
+                <button class="tournament-close">&times;</button>
+            </div>
+            <div class="overlay-body">
+                <div class="loading-placeholder">
+                    <div class="spinner"></div>
+                    <p>Loading tournaments...</p>
+                </div>
+
+                <div id="overlayTournamentsGrid" style="display: none;">
+                    <!-- Central Leagues -->
+                    <div class="tournament-category">
+                        <div class="category-header">
+                            <i class="fas fa-trophy"></i> Central Schools Leagues
+                        </div>
+                        <div class="tournament-items"></div>
+                    </div>
+
+                    <!-- Zone Leagues -->
+                    <div class="tournament-category">
+                        <div class="category-header">
+                            <i class="fas fa-map-marked-alt"></i> Zone Schools Leagues
+                        </div>
+                        <div class="category-selector">
+                            <select class="zone-selector">
+                                <option value="">Select a zone...</option>
+                                <option value="westAcholi">West Acholi Zone</option>
+                                <option value="eastAcholi">East Acholi Zone</option>
+                                <option value="masaka">Masaka Zone</option>
+                                <option value="kigezi">Kigezi Zone</option>
+                                <option value="teso">Teso Zone</option>
+                                <option value="rwenzori">Rwenzori Zone</option>
+                                <option value="bugisu">Bugisu Zone</option>
+                                <option value="busoga">Busoga Zone</option>
+                                <option value="ankole">Ankole Zone</option>
+                                <option value="bukedi">Bukedi Zone</option>
+                                <option value="lango">Lango Zone</option>
+                            </select>
+                        </div>
+                        <div class="zone-tournaments tournament-items"></div>
+                    </div>
+
+                    <!-- Regional Leagues -->
+                    <div class="tournament-category">
+                        <div class="category-header">
+                            <i class="fas fa-globe-africa"></i> Regional Leagues
+                        </div>
+                        <div class="category-selector">
+                            <select class="region-selector">
+                                <option value="">Select a region...</option>
+                                <option value="western">Western Region</option>
+                                <option value="central">Central Region</option>
+                                <option value="northern">Northern Region</option>
+                                <option value="eastern">Eastern Region</option>
+                            </select>
+                        </div>
+                        <div class="region-tournaments tournament-items"></div>
+                    </div>
+
+                    <!-- Independence Cup -->
+                    <div class="tournament-category">
+                        <div class="category-header">
+                            <i class="fas fa-medal"></i> Independence Cup
+                        </div>
+                        <div class="tournament-items"></div>
+                    </div>
+
+                    <!-- International -->
+                    <div class="tournament-category">
+                        <div class="category-header">
+                            <i class="fas fa-plane"></i> International Tournaments
+                        </div>
+                        <div class="category-selector">
+                            <select class="international-selector">
+                                <option value="">Select tournament...</option>
+                                <option value="abudhabi">World Schools Festival Abu-Dhabi 2026</option>
+                            </select>
+                        </div>
+                        <div class="international-tournaments tournament-items"></div>
+                    </div>
+                </div>
+
+                <!-- Player Selection Section -->
+                <div id="playerSelectionSection">
+                    <div class="selection-header">
+                        <h3 class="tournament-name">Tournament Name</h3>
+                        <p>Select players to enroll in this tournament</p>
+                    </div>
+                    <div class="player-selection-list"></div>
+                    <div class="selection-actions">
+                        <button class="btn btn-secondary" id="backToTournaments">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-primary" id="confirmEnrollment">
+                            <i class="fas fa-check"></i> Confirm Enrollment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+    const enrollBtn = document.getElementById('enrollBtn');
+    const seedBtn = document.getElementById('seedBtn'); // ADD THIS
+    const tournamentOverlay = document.getElementById('tournamentOverlay');
+    const closeBtn = document.querySelector('.tournament-close');
+
+    // Load school profile
+    loadSchoolProfile();
+    
+    // ADD THIS: Seed button click
+    if (seedBtn) {
+        seedBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Seeding...';
+            await seedTournaments();
+            this.innerHTML = '<i class="fas fa-check"></i> Seeded!';
+        });
+    }
+});
+        // Error Handler
+        const ErrorHandler = {
+            showError: function(message) {
+                this.showMessage(message, 'error');
+            },
+            showSuccess: function(message) {
+                this.showMessage(message, 'success');
+            },
+            showMessage: function(message, type) {
+                const toast = document.createElement('div');
+                toast.className = `message-toast ${type}`;
+                toast.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            },
+            handleError: function(error, message) {
+                console.error(message, error);
+                this.showError(message);
+            }
+        };
+
+        // Initialize Supabase client
+        const SUPABASE_URL = 'https://vzvtymgtegqupyjezfgd.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6dnR5bWd0ZWdxdXB5amV6ZmdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2MjUyNTgsImV4cCI6MjA3NTIwMTI1OH0.hhThAdMLbc3Ircx9YnEOfvPFr3LjQUjISl6zW5ZpFtE'; // Replace with your Supabase anon key
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function seedTournaments() {
+    try {
+        console.log('Starting tournament seeding...');
+        
+        // First check if tournaments already exist
+        const { data: existing, error: checkError } = await supabase
+            .from('tournaments')
+            .select('id')
+            .limit(1);
+            
+        if (checkError) {
+            console.error('Error checking tournaments:', checkError);
+            ErrorHandler.showError('Error checking existing tournaments');
+            return null;
+        }
+        
+        if (existing && existing.length > 0) {
+            const confirmReseed = confirm('Tournaments already exist in the database. Do you want to clear and re-seed them?');
+            if (!confirmReseed) {
+                ErrorHandler.showError('Seeding cancelled');
+                return null;
+            }
+            
+            // Delete existing tournaments
+            const { error: deleteError } = await supabase
+                .from('tournaments')
+                .delete()
+                .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+                
+            if (deleteError) {
+                console.error('Error deleting tournaments:', deleteError);
+                ErrorHandler.showError('Failed to clear existing tournaments');
+                return null;
+            }
+        }
+        
+        const tournamentsToInsert = [];
+        
+        // Central Leagues
+        Object.entries(tournamentStructure['central-leagues']).forEach(([key, t]) => {
+            tournamentsToInsert.push({
+                name: t.name,
+                description: t.description,
+                start_date: t.start_date,
+                location: t.location,
+                tournament_type: 'central-league',
+                category: key
+            });
+        });
+        
+        // Zonal Leagues
+        Object.entries(tournamentStructure['zonal-leagues']).forEach(([key, t]) => {
+            tournamentsToInsert.push({
+                name: t.name,
+                description: t.description,
+                start_date: t.start_date,
+                location: t.location,
+                tournament_type: 'zonal-league',
+                category: key
+            });
+        });
+        
+        // Regional Leagues
+        Object.entries(tournamentStructure['regional-leagues']).forEach(([key, t]) => {
+            tournamentsToInsert.push({
+                name: t.name,
+                description: t.description,
+                start_date: t.start_date,
+                location: t.location,
+                tournament_type: 'regional-league',
+                category: key
+            });
+        });
+        
+        // Cups
+        Object.entries(tournamentStructure.cups).forEach(([key, t]) => {
+            tournamentsToInsert.push({
+                name: t.name,
+                description: t.description,
+                start_date: t.start_date,
+                location: t.location,
+                tournament_type: 'cup',
+                category: key
+            });
+        });
+        
+        // International
+        Object.entries(tournamentStructure.international).forEach(([key, t]) => {
+            tournamentsToInsert.push({
+                name: t.name,
+                description: t.description,
+                start_date: t.start_date,
+                location: t.location,
+                tournament_type: 'international',
+                category: key
+            });
+        });
+        
+        console.log('Tournaments to insert:', tournamentsToInsert.length);
+        
+        // Insert all tournaments
+        const { data, error } = await supabase
+            .from('tournaments')
+            .insert(tournamentsToInsert)
+            .select();
+            
+        if (error) {
+            console.error('Error seeding tournaments:', error);
+            ErrorHandler.showError('Failed to seed tournaments: ' + error.message);
+            return null;
+        }
+        
+        console.log('Tournaments seeded successfully:', data);
+        ErrorHandler.showSuccess(`Successfully seeded ${data.length} tournaments!`);
+        
+        // Hide the seed button after successful seeding
+        const seedBtn = document.getElementById('seedBtn');
+        if (seedBtn) {
+            seedBtn.style.display = 'none';
+        }
+        
+        return data;
+        
+    } catch (error) {
+        console.error('Seeding error:', error);
+        ErrorHandler.showError('Failed to seed tournaments');
+        return null;
+    }
+}
+
+        // Function to load school profile
+        async function loadSchoolProfile() {
+            const profileLoading = document.getElementById('profileLoading');
+            const profileContent = document.getElementById('profileContent');
+
+            try {
+                profileLoading.style.display = 'block';
+                profileContent.style.display = 'none';
+
+                // First get the user session
+                const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError) throw sessionError;
+                if (!sessionData.session) {
+                    window.location.href = "signin.html";
+                    return;
+                }
+
+                // Get user profile with school data
+                const { data: profileData, error: profileError } = await supabase
+                    .from("profiles")
+                    .select(`*, schools (*)`)
+                    .eq("id", sessionData.session.user.id)
+                    .single();
+
+                if (profileError) throw profileError;
+                if (!profileData) throw new Error("Profile not found");
+                if (!profileData.schools) throw new Error("No school associated with this profile");
+
+                const schoolData = profileData.schools;
+
+                // Store the school UUID
+                let schoolIdField = document.querySelector('[data-field="schoolId"]');
+                if (!schoolIdField) {
+                    const hiddenDiv = document.querySelector('div[style*="display: none"]');
+                    schoolIdField = document.createElement('span');
+                    schoolIdField.setAttribute('data-field', 'schoolId');
+                    hiddenDiv.appendChild(schoolIdField);
+                }
+                schoolIdField.textContent = schoolData.id;
+
+                // Store center number
+                const centerNumberField = document.querySelector('[data-field="centerNumber"]');
+                if (centerNumberField) {
+                    centerNumberField.textContent = schoolData.center_number;
+                }
+
+                // ADD THIS DEBUG LOGGING
+                console.log('=== School Profile Loaded ===');
+                console.log('School UUID (schoolData.id):', schoolData.id);
+                console.log('Center Number:', schoolData.center_number);
+                console.log('schoolIdField content:', schoolIdField.textContent);
+                console.log('centerNumberField content:', centerNumberField?.textContent);
+                console.log('============================');
+
+                profileContent.innerHTML = `
+                    <div class="profile-grid">
+                        <div class="profile-item">
+                            <strong>School Name:</strong>
+                            <span>${schoolData.school_name || 'N/A'}</span>
+                        </div>
+                        <div class="profile-item">
+                            <strong>School ID:</strong>
+                            <span>${schoolData.center_number}</span>
+                        </div>
+                        <div class="profile-item">
+                            <strong>District:</strong>
+                            <span>${schoolData.district || 'N/A'}</span>
+                        </div>
+                        <div class="profile-item">
+                            <strong>Zone:</strong>
+                            <span>${schoolData.zone || 'N/A'}</span>
+                        </div>
+                        <div class="profile-item">
+                            <strong>Region:</strong>
+                            <span>${schoolData.region || 'N/A'}</span>
+                        </div>
+                        <div class="profile-item">
+                            <strong>Contact Person:</strong>
+                            <span>${profileData.full_name || 'N/A'}</span>
+                        </div>
+                        <div class="profile-item">
+                            <strong>Status:</strong>
+                            <span class="status-badge ${schoolData.status === 'active' ? 'active' : 'inactive'}">
+                                ${schoolData.status === 'active' ? 'Active' : 'Inactive'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                ErrorHandler.handleError(error, 'Failed to load school profile');
+                profileContent.innerHTML = `<p class="error-text">Error loading school profile</p>`;
+            } finally {
+                profileLoading.style.display = 'none';
+                profileContent.style.display = 'block';
+            }
+        }
+
+        // Tournament structure - Complete list
+        const tournamentStructure = {
+            'central-leagues': {
+                mainLeague: {
+                    id: 'central-main-2025',
+                    name: 'Central Schools Main League',
+                    description: 'Premier division of central region schools rugby',
+                    start_date: '2025-11-01',
+                    location: 'Various Venues, Central Region'
+                },
+                divisionTwo: {
+                    id: 'central-div2-2025',
+                    name: 'Central Schools Division II League',
+                    description: 'Second division of central region schools rugby',
+                    start_date: '2025-11-01',
+                    location: 'Various Venues, Central Region'
+                }
+            },
+            'zonal-leagues': {
+                westAcholi: {
+                    id: 'west-acholi-2025',
+                    name: 'West Acholi Zone League',
+                    description: 'West Acholi zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'West Acholi Zone'
+                },
+                eastAcholi: {
+                    id: 'east-acholi-2025',
+                    name: 'East Acholi Zone League',
+                    description: 'East Acholi zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'East Acholi Zone'
+                },
+                masaka: {
+                    id: 'masaka-2025',
+                    name: 'Masaka Zone League',
+                    description: 'Masaka zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Masaka Zone'
+                },
+                kigezi: {
+                    id: 'kigezi-2025',
+                    name: 'Kigezi Zone League',
+                    description: 'Kigezi zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Kigezi Zone'
+                },
+                teso: {
+                    id: 'teso-2025',
+                    name: 'Teso Zone League',
+                    description: 'Teso zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Teso Zone'
+                },
+                rwenzori: {
+                    id: 'rwenzori-2025',
+                    name: 'Rwenzori Zone League',
+                    description: 'Rwenzori zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Rwenzori Zone'
+                },
+                bugisu: {
+                    id: 'bugisu-2025',
+                    name: 'Bugisu Zone League',
+                    description: 'Bugisu zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Bugisu Zone'
+                },
+                busoga: {
+                    id: 'busoga-2025',
+                    name: 'Busoga Zone League',
+                    description: 'Busoga zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Busoga Zone'
+                },
+                ankole: {
+                    id: 'ankole-2025',
+                    name: 'Ankole Zone League',
+                    description: 'Ankole zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Ankole Zone'
+                },
+                bukedi: {
+                    id: 'bukedi-2025',
+                    name: 'Bukedi Zone League',
+                    description: 'Bukedi zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Bukedi Zone'
+                },
+                lango: {
+                    id: 'lango-2025',
+                    name: 'Lango Zone League',
+                    description: 'Lango zonal schools competition',
+                    start_date: '2025-11-15',
+                    location: 'Lango Zone'
+                }
+            },
+            'regional-leagues': {
+                western: {
+                    id: 'western-2025',
+                    name: 'Western Regional League',
+                    description: 'Western region schools competition',
+                    start_date: '2025-12-01',
+                    location: 'Western Region'
+                },
+                central: {
+                    id: 'central-2025',
+                    name: 'Central Regional League',
+                    description: 'Central region schools competition',
+                    start_date: '2025-12-01',
+                    location: 'Central Region'
+                },
+                northern: {
+                    id: 'northern-2025',
+                    name: 'Northern Regional League',
+                    description: 'Northern region schools competition',
+                    start_date: '2025-12-01',
+                    location: 'Northern Region'
+                },
+                eastern: {
+                    id: 'eastern-2025',
+                    name: 'Eastern Regional League',
+                    description: 'Eastern region schools competition',
+                    start_date: '2025-12-01',
+                    location: 'Eastern Region'
+                }
+            },
+            'cups': {
+                independence: {
+                    id: 'independence-2025',
+                    name: 'Independence Cup 2025',
+                    description: 'National schools independence cup competition',
+                    start_date: '2025-10-09',
+                    location: 'Kampala, Uganda'
+                }
+            },
+            'international': {
+                abudhabi: {
+                    id: 'abudhabi-2026',
+                    name: 'World Schools Festival Abu-Dhabi 2026',
+                    description: 'International schools rugby tournament hosted in Abu-Dhabi, UAE',
+                    start_date: '2026-01-15',
+                    location: 'Abu-Dhabi, UAE'
+                }
+            }
+        };
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const enrollBtn = document.getElementById('enrollBtn');
+            const tournamentOverlay = document.getElementById('tournamentOverlay');
+            const closeBtn = document.querySelector('.tournament-close');
+
+            // Load school profile
+            loadSchoolProfile();
+            
+            // Enroll button click
+            if (enrollBtn) {
+                enrollBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    console.log('Enroll button clicked');
+                    
+                    const schoolId = document.querySelector('[data-field="schoolId"]')?.textContent;
+                    const centerNumber = document.querySelector('[data-field="centerNumber"]')?.textContent;
+                    
+                    console.log('=== Enroll Button Debug ===');
+                    console.log('schoolId from data-field:', schoolId);
+                    console.log('schoolId length:', schoolId?.length);
+                    console.log('centerNumber from data-field:', centerNumber);
+                    console.log('===========================');
+                    
+                    if (!schoolId) {
+                        ErrorHandler.showError('School ID not found');
+                        return;
+                    }
+
+                    tournamentOverlay.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                    
+                    await loadTournaments(schoolId);  // Make sure this passes the UUID!
+                });
+            }
+
+            // Close button
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    closeOverlay();
+                });
+            }
+
+            // Close on overlay click
+            tournamentOverlay.addEventListener('click', function(e) {
+                if (e.target === tournamentOverlay) {
+                    closeOverlay();
+                }
+            });
+
+            // ESC key to close
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && tournamentOverlay.style.display === 'block') {
+                    closeOverlay();
+                }
+            });
+        });
+
+        function closeOverlay() {
+            const tournamentOverlay = document.getElementById('tournamentOverlay');
+            const playerSelectionSection = document.getElementById('playerSelectionSection');
+            const overlayTournamentsGrid = document.getElementById('overlayTournamentsGrid');
+            
+            tournamentOverlay.style.display = 'none';
+            document.body.style.overflow = '';
+            
+            if (playerSelectionSection) playerSelectionSection.style.display = 'none';
+            if (overlayTournamentsGrid) overlayTournamentsGrid.style.display = 'block';
+        }
+
+       async function loadTournaments(schoolId) {
+    const gridContainer = document.getElementById('overlayTournamentsGrid');
+    const loadingPlaceholder = document.querySelector('.loading-placeholder');
+
+    try {
+        // Show loading
+        if (loadingPlaceholder) loadingPlaceholder.style.display = 'block';
+        if (gridContainer) gridContainer.style.display = 'none';
+
+        // Fetch tournaments from database
+        const { data: tournaments, error: tournamentsError } = await supabase
+            .from('tournaments')
+            .select('*')
+            .order('start_date');
+
+        if (tournamentsError) throw tournamentsError;
+        if (!tournaments || tournaments.length === 0) {
+            ErrorHandler.showError('No tournaments available. Please contact admin.');
+            return;
+        }
+
+        // Get existing enrollments (use UUID)
+        const { data: enrollments, error: enrollmentsError } = await supabase
+            .from('tournament_enrollments')
+            .select(`
+                tournament_id,
+                players (
+                    id,
+                    full_name,
+                    age_category,
+                    gender,
+                    age,
+                    position,
+                    photo_url
+                )
+            `)
+            .eq('school_id', schoolId);
+
+        if (enrollmentsError) throw enrollmentsError;
+        
+        const existingEnrollments = enrollments ? enrollments.map(e => e.tournament_id) : [];
+
+        // Group tournaments by type
+        const tournamentGroups = {
+            'central-league': [],
+            'zonal-league': [],
+            'regional-league': [],
+            'cup': [],
+            'international': []
+        };
+
+        tournaments.forEach(t => {
+            if (tournamentGroups[t.tournament_type]) {
+                tournamentGroups[t.tournament_type].push(t);
+            }
+        });
+
+        // Get tournament containers
+        const centralItems = gridContainer.querySelector('.tournament-category:nth-child(1) .tournament-items');
+        const regionItems = gridContainer.querySelector('.region-tournaments');
+        const cupItems = gridContainer.querySelector('.tournament-category:nth-child(4) .tournament-items');
+
+        // Clear all containers
+        [centralItems, regionItems, cupItems].forEach(container => {
+            if (container) container.innerHTML = '';
+        });
+
+        // Populate central leagues
+        if (centralItems) {
+            tournamentGroups['central-league'].forEach(tournament => {
+                centralItems.appendChild(createTournamentCard(tournament, existingEnrollments, enrollments));
+            });
+        }
+
+        // Populate regional leagues initial state
+        if (regionItems) {
+            const defaultRegion = document.querySelector('.region-selector')?.value;
+            if (defaultRegion && tournamentGroups['regional-league']) {
+                const regionalTournament = tournamentGroups['regional-league'].find(t => t.category === defaultRegion);
+                if (regionalTournament) {
+                    // Get latest enrollments with player data for the specific tournament
+                    const tournamentEnrollments = enrollments?.filter(e => e.tournament_id === regionalTournament.id) || [];
+                    regionItems.appendChild(createTournamentCard(regionalTournament, existingEnrollments, tournamentEnrollments));
+                }
+            }
+        }
+
+        // Populate independence cup
+        if (cupItems) {
+            tournamentGroups['cup'].forEach(tournament => {
+                cupItems.appendChild(createTournamentCard(tournament, existingEnrollments, enrollments));
+            });
+        }
+
+        // Setup dropdowns with database tournaments and enrollment data
+        setupTournamentDropdowns(existingEnrollments, tournamentGroups, enrollments);
+
+        // Hide loading, show grid
+        if (loadingPlaceholder) loadingPlaceholder.style.display = 'none';
+        if (gridContainer) gridContainer.style.display = 'block';
+
+    } catch (error) {
+        ErrorHandler.handleError(error, 'Failed to load tournaments');
+    }
+}
+
+        function setupTournamentDropdowns(existingEnrollments = [], tournamentGroups = {}, enrollmentData = []) {
+            // Zone selector
+            const zoneSelector = document.querySelector('.zone-selector');
+            const zoneTournaments = document.querySelector('.zone-tournaments');
+            
+            if (zoneSelector && zoneTournaments) {
+                zoneSelector.addEventListener('change', async function() {
+                    const selectedZone = this.value;
+                    zoneTournaments.innerHTML = '';
+                    
+                    if (selectedZone && tournamentStructure['zonal-leagues'][selectedZone]) {
+                        const schoolId = document.querySelector('[data-field="schoolId"]')?.textContent;
+                        if (!schoolId) {
+                            ErrorHandler.showError('School ID not found');
+                            return;
+                        }
+
+                        try {
+                            // Get latest enrollments for accurate enrolled status
+                            const { data: enrollments, error: enrollmentsError } = await supabase
+                                .from('tournament_enrollments')
+                                .select('tournament_id')
+                                .eq('school_id', schoolId);
+
+                            if (enrollmentsError) throw enrollmentsError;
+                            const currentEnrollments = enrollments ? enrollments.map(e => e.tournament_id) : [];
+
+                            const tournament = tournamentStructure['zonal-leagues'][selectedZone];
+                            zoneTournaments.style.display = 'grid';
+                            zoneTournaments.appendChild(createTournamentCard(tournament, currentEnrollments, enrollmentData));
+                        } catch (error) {
+                            ErrorHandler.handleError(error, 'Failed to load zone tournament');
+                        }
+                    } else {
+                        zoneTournaments.style.display = 'none';
+                    }
+                });
+            }
+
+            // Region selector
+            const regionSelector = document.querySelector('.region-selector');
+            const regionTournaments = document.querySelector('.region-tournaments');
+            
+            if (regionSelector && regionTournaments) {
+                regionSelector.addEventListener('change', async function() {
+                    const selectedRegion = this.value;
+                    regionTournaments.innerHTML = '';
+                    
+                    if (selectedRegion && tournamentStructure['regional-leagues'][selectedRegion]) {
+                        const schoolId = document.querySelector('[data-field="schoolId"]')?.textContent;
+                        if (!schoolId) {
+                            ErrorHandler.showError('School ID not found');
+                            return;
+                        }
+
+                        try {
+                            // Get latest enrollments with full player data
+                            const { data: enrollments, error: enrollmentsError } = await supabase
+                                .from('tournament_enrollments')
+                                .select(`
+                                    tournament_id,
+                                    players (
+                                        id,
+                                        full_name,
+                                        age_category,
+                                        gender,
+                                        age,
+                                        position,
+                                        photo_url
+                                    )
+                                `)
+                                .eq('school_id', schoolId);
+
+                            if (enrollmentsError) throw enrollmentsError;
+                            const currentEnrollments = enrollments ? enrollments.map(e => e.tournament_id) : [];
+
+                            const tournament = tournamentStructure['regional-leagues'][selectedRegion];
+                            regionTournaments.style.display = 'grid';
+                            regionTournaments.appendChild(createTournamentCard(tournament, currentEnrollments, enrollments));
+                        } catch (error) {
+                            ErrorHandler.handleError(error, 'Failed to load region tournament');
+                        }
+                    } else {
+                        regionTournaments.style.display = 'none';
+                    }
+                });
+            }
+
+            // International selector
+            const internationalSelector = document.querySelector('.international-selector');
+            const internationalTournaments = document.querySelector('.international-tournaments');
+            
+            if (internationalSelector && internationalTournaments) {
+                internationalSelector.addEventListener('change', async function() {
+                    const selectedTournament = this.value;
+                    internationalTournaments.innerHTML = '';
+                    
+                    if (selectedTournament && tournamentStructure.international[selectedTournament]) {
+                        const schoolId = document.querySelector('[data-field="schoolId"]')?.textContent;
+                        if (!schoolId) {
+                            ErrorHandler.showError('School ID not found');
+                            return;
+                        }
+
+                        try {
+                            // Get latest enrollments with full player data
+                            const { data: enrollments, error: enrollmentsError } = await supabase
+                                .from('tournament_enrollments')
+                                .select(`
+                                    tournament_id,
+                                    players (
+                                        id,
+                                        full_name,
+                                        age_category,
+                                        gender,
+                                        age,
+                                        position,
+                                        photo_url
+                                    )
+                                `)
+                                .eq('school_id', schoolId);
+
+                            if (enrollmentsError) throw enrollmentsError;
+                            const currentEnrollments = enrollments ? enrollments.map(e => e.tournament_id) : [];
+
+                            const tournament = tournamentStructure.international[selectedTournament];
+                            if (!tournament) {
+                                throw new Error('Selected international tournament not found');
+                            }
+
+                            // Clear previous content and show the container
+                            internationalTournaments.innerHTML = '';
+                            internationalTournaments.style.display = 'grid';
+                            internationalTournaments.appendChild(createTournamentCard(tournament, currentEnrollments, enrollments));
+                        } catch (error) {
+                            ErrorHandler.handleError(error, 'Failed to load international tournament');
+                        }
+                    } else {
+                        internationalTournaments.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        function createTournamentCard(tournament, existingEnrollments, enrollmentData = []) {
+    const isEnrolled = existingEnrollments.includes(tournament.id);
+    const startDate = tournament.start_date ? new Date(tournament.start_date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }) : 'Date TBD';
+
+    // Get tournament-specific enrollment data
+    const tournamentEnrollments = enrollmentData?.filter(e => e.tournament_id === tournament.id) || [];
+
+    // Add styles for enrolled players dropdown
+    if (!document.getElementById('enrolled-players-styles')) {
+        const style = document.createElement('style');
+        style.id = 'enrolled-players-styles';
+        style.textContent = `
+            .enrolled-section {
+                position: relative;
+                width: 100%;
+            }
+            .enrolled-players-dropdown {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                margin-top: 8px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                z-index: 100;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            .enrolled-players-content {
+                padding: 15px;
+            }
+            .enrolled-player-item {
+                display: flex;
+                align-items: center;
+                padding: 8px;
+                border-bottom: 1px solid #eee;
+            }
+            .enrolled-player-item:last-child {
+                border-bottom: none;
+            }
+            .player-photo {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 12px;
+                object-fit: cover;
+            }
+            .category-header {
+                color: #c00;
+                font-weight: 600;
+                padding: 8px;
+                margin-top: 8px;
+                border-bottom: 2px solid #eee;
+            }
+            .player-info {
+                flex: 1;
+            }
+            .player-name {
+                font-weight: 600;
+                display: block;
+                color: #333;
+            }
+            .player-details {
+                font-size: 0.9em;
+                color: #666;
+            }
+            .btn-info {
+                background-color: #17a2b8;
+                color: white;
+                transition: background-color 0.3s;
+            }
+            .btn-info:hover {
+                background-color: #138496;
+            }
+            .btn-info i {
+                transition: transform 0.3s;
+            }
+            .btn-info.active i {
+                transform: rotate(180deg);
+            }
+            .enrolled-players-actions {
+                padding: 8px 15px;
+                display: flex;
+                gap: 8px;
+                border-bottom: 1px solid #eee;
+            }
+            .edit-mode .enrolled-player-item {
+                padding-left: 36px;
+                position: relative;
+            }
+            .edit-mode .remove-player-checkbox {
+                position: absolute;
+                left: 8px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            .enrolled-players-actions .btn {
+                padding: 4px 12px;
+                font-size: 0.9em;
+            }
+            .btn-danger {
+                background-color: #dc3545;
+                color: white;
+            }
+            .btn-danger:hover {
+                background-color: #c82333;
+            }
+            .btn-secondary {
+                background-color: #6c757d;
+                color: white;
+            }
+            .btn-secondary:hover {
+                background-color: #5a6268;
+            }
+            .no-players {
+                text-align: center;
+                padding: 20px;
+                color: #666;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'tournament-card';
+    
+    // Store the tournament ID and name as data attributes
+    card.dataset.tournamentId = tournament.id;
+    card.dataset.tournamentName = tournament.name;
+    
+    card.innerHTML = `
+        <div class="tournament-header">
+            <h3>${tournament.name}</h3>
+            ${isEnrolled ? '<span class="enrolled-badge"><i class="fas fa-check-circle"></i> Enrolled</span>' : ''}
+        </div>
+        <div class="tournament-info">
+            <p>${tournament.description}</p>
+            <div class="tournament-details">
+                <span><i class="fas fa-calendar"></i> ${startDate}</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${tournament.location}</span>
+            </div>
+        </div>
+        <div class="tournament-actions">
+            ${isEnrolled 
+                ? `<div class="enrolled-section">
+                    <button class="btn btn-info toggle-players-btn" data-tournament-id="${tournament.id}">
+                        View Players <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="enrolled-players-dropdown" id="players-${tournament.id}">
+                        <div class="enrolled-players-content">
+                            <div class="loading-spinner">Loading enrolled players...</div>
+                        </div>
+                    </div>
+                   </div>`
+                : `<button class="btn btn-primary enroll-tournament-btn">
+                    <i class="fas fa-users"></i> Enroll Players
+                   </button>`
+            }
+        </div>
+    `;
+    
+    // Add event listeners
+    if (isEnrolled) {
+        // Handle toggle button click
+        const toggleBtn = card.querySelector('.toggle-players-btn');
+        const dropdown = card.querySelector('.enrolled-players-dropdown');
+        if (toggleBtn && dropdown) {
+            toggleBtn.addEventListener('click', async function() {
+                const isActive = this.classList.contains('active');
+                const tournamentId = this.dataset.tournamentId;
+
+                if (!isActive) {
+                    // Load enrolled players when opening
+                    const schoolId = document.querySelector('[data-field="schoolId"]')?.textContent;
+                    if (!schoolId) {
+                        ErrorHandler.showError('School ID not found');
+                        return;
+                    }
+
+                    try {
+                        // Get enrolled players with their details
+                        const { data: enrollments, error: enrollmentsError } = await supabase
+                            .from('tournament_enrollments')
+                            .select(`
+                                player_id,
+                                players (
+                                    id,
+                                    full_name,
+                                    age_category,
+                                    gender,
+                                    age,
+                                    position,
+                                    photo_url
+                                )
+                            `)
+                            .eq('tournament_id', tournamentId)
+                            .eq('school_id', schoolId);
+
+                        if (enrollmentsError) throw enrollmentsError;
+
+                        // Group players by category
+                        const playersByCategory = {
+                            boys: {
+                                U20: [],
+                                U17: [],
+                                U15: []
+                            },
+                            girls: {
+                                U20: [],
+                                U17: [],
+                                U15: []
+                            }
+                        };
+
+                        enrollments.forEach(enrollment => {
+                            const player = enrollment.players;
+                            if (player) {
+                                const gender = player.gender === 'male' ? 'boys' : 'girls';
+                                if (playersByCategory[gender][player.age_category]) {
+                                    playersByCategory[gender][player.age_category].push(player);
+                                }
+                            }
+                        });
+
+                        // Create content with action buttons
+                        let content = `
+                            <div class="enrolled-players-actions">
+                                <button class="btn btn-info add-players-btn">
+                                    <i class="fas fa-plus"></i> Add Players
+                                </button>
+                                <button class="btn btn-secondary edit-players-btn">
+                                    <i class="fas fa-edit"></i> Edit List
+                                </button>
+                                <button class="btn btn-primary download-pdf-btn">
+                                    <i class="fas fa-download"></i> Download PDF
+                                </button>
+                            </div>
+                        `;
+
+                        // Add boys section
+                        let hasBoysTeams = false;
+                        for (const category in playersByCategory.boys) {
+                            if (playersByCategory.boys[category].length > 0) {
+                                if (!hasBoysTeams) {
+                                    content += '<div class="category-header">Boys Teams</div>';
+                                    hasBoysTeams = true;
+                                }
+                                content += `<div class="age-category"><h5>${category}</h5>`;
+                                playersByCategory.boys[category].forEach(player => {
+                                    const photoUrl = player.photo_url 
+                                        ? supabase.storage.from('player_photos').getPublicUrl(player.photo_url).data.publicUrl 
+                                        : 'https://placehold.co/40x40/EFEFEF/333333?text=...';
+                                    content += `
+                                        <div class="enrolled-player-item" data-player-id="${player.id}">
+                                            <input type="checkbox" class="remove-player-checkbox" style="display: none;">
+                                            <img src="${photoUrl}" alt="${player.full_name}" class="player-photo">
+                                            <div class="player-info">
+                                                <span class="player-name">${player.full_name}</span>
+                                                <span class="player-details">
+                                                    Age: ${player.age || 'N/A'}
+                                                    ${player.position ? `<span class="player-position">${player.position}</span>` : ''}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                                content += '</div>';
+                            }
+                        }
+
+                        // Add girls section
+                        let hasGirlsTeams = false;
+                        for (const category in playersByCategory.girls) {
+                            if (playersByCategory.girls[category].length > 0) {
+                                if (!hasGirlsTeams) {
+                                    content += '<div class="category-header">Girls Teams</div>';
+                                    hasGirlsTeams = true;
+                                }
+                                content += `<div class="age-category"><h5>${category}</h5>`;
+                                playersByCategory.girls[category].forEach(player => {
+                                    const photoUrl = player.photo_url 
+                                        ? supabase.storage.from('player_photos').getPublicUrl(player.photo_url).data.publicUrl 
+                                        : 'https://placehold.co/40x40/EFEFEF/333333?text=...';
+                                    content += `
+                                        <div class="enrolled-player-item" data-player-id="${player.id}">
+                                            <input type="checkbox" class="remove-player-checkbox" style="display: none;">
+                                            <img src="${photoUrl}" alt="${player.full_name}" class="player-photo">
+                                            <div class="player-info">
+                                                <span class="player-name">${player.full_name}</span>
+                                                <span class="player-details">
+                                                    Age: ${player.age || 'N/A'}
+                                                    ${player.position ? `<span class="player-position">${player.position}</span>` : ''}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                                content += '</div>';
+                            }
+                        }
+
+                        if (!hasBoysTeams && !hasGirlsTeams) {
+                            content += '<div class="no-players">No players enrolled yet.</div>';
+                        }
+
+                        const contentDiv = dropdown.querySelector('.enrolled-players-content');
+                        contentDiv.innerHTML = content;
+
+                        // Setup action buttons
+                        const addBtn = contentDiv.querySelector('.add-players-btn');
+                        const editBtn = contentDiv.querySelector('.edit-players-btn');
+                        
+                        if (addBtn) {
+                            addBtn.addEventListener('click', () => {
+                                // Show player selection dialog
+                                showPlayerSelection(tournamentId, tournament.name, true);
+                            });
+                        }
+
+                        // Setup download PDF button
+                        const downloadBtn = contentDiv.querySelector('.download-pdf-btn');
+                        if (downloadBtn) {
+                            downloadBtn.addEventListener('click', async () => {
+                                try {
+                                    downloadBtn.disabled = true;
+                                    downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+
+                                    // Create a new PDF document
+                                    const { jsPDF } = window.jspdf;
+                                    const doc = new jsPDF();
+
+                                    // Load and add the USRA logo
+                                    const img = new Image();
+                                    img.src = 'photos/logos/usraLogo.png';
+                                    await new Promise((resolve, reject) => {
+                                        img.onload = resolve;
+                                        img.onerror = reject;
+                                    });
+
+                                    // Calculate image dimensions to maintain aspect ratio
+                                    const maxWidth = 40; // maximum width in the PDF
+                                    const ratio = img.height / img.width;
+                                    const width = maxWidth;
+                                    const height = width * ratio;
+
+                                    // Add the logo to the top right corner
+                                    doc.addImage(img, 'PNG', 155, 10, width, height);
+
+                                    // Add tournament information
+                                    doc.setFontSize(20);
+                                    doc.text(tournament.name, 15, 20);
+                                    doc.setFontSize(12);
+                                    doc.text('Enrolled Players List', 15, 30);
+                                    doc.setFontSize(10);
+                                    const schoolName = document.querySelector('.profile-grid .profile-item:first-child span').textContent;
+                                    doc.text(`School: ${schoolName}`, 15, 40);
+                                    const date = new Date().toLocaleDateString('en-US', { 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric' 
+                                    });
+                                    doc.text(`Generated on: ${date}`, 15, 45);
+
+                                    // Initialize starting y position
+                                    let yPos = 60;
+
+                                    // Function to add a section of players
+                                    const addPlayerSection = (title, players, startY) => {
+                                        if (players.length === 0) return startY;
+
+                                        // Add section title
+                                        doc.setFontSize(12);
+                                        doc.setFont(undefined, 'bold');
+                                        doc.text(title, 15, startY);
+                                        
+                                        // Prepare table data
+                                        const headers = [['Name', 'Age', 'Position']];
+                                        const data = players.map(p => [
+                                            p.full_name,
+                                            p.age || 'N/A',
+                                            p.position || 'N/A'
+                                        ]);
+
+                                        // Add table
+                                        doc.autoTable({
+                                            head: headers,
+                                            body: data,
+                                            startY: startY + 5,
+                                            margin: { left: 15 },
+                                            columnStyles: {
+                                                0: { cellWidth: 80 },
+                                                1: { cellWidth: 30 },
+                                                2: { cellWidth: 50 }
+                                            }
+                                        });
+
+                                        return doc.lastAutoTable.finalY + 10;
+                                    };
+
+                                    // Add Boys teams
+                                    let currentY = yPos;
+                                    ['U20', 'U17', 'U15'].forEach(category => {
+                                        if (playersByCategory.boys[category].length > 0) {
+                                            currentY = addPlayerSection(
+                                                `Boys ${category} Team`, 
+                                                playersByCategory.boys[category], 
+                                                currentY
+                                            );
+                                        }
+                                    });
+
+                                    // Add page break if needed
+                                    if (currentY > 250) {
+                                        doc.addPage();
+                                        currentY = 20;
+                                    }
+
+                                    // Add Girls teams
+                                    ['U20', 'U17', 'U15'].forEach(category => {
+                                        if (playersByCategory.girls[category].length > 0) {
+                                            currentY = addPlayerSection(
+                                                `Girls ${category} Team`, 
+                                                playersByCategory.girls[category], 
+                                                currentY
+                                            );
+                                        }
+                                    });
+
+                                    // Save the PDF
+                                    doc.save(`${tournament.name.replace(/\s+/g, '_')}_enrolled_players.pdf`);
+
+                                    // Reset button state
+                                    downloadBtn.disabled = false;
+                                    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
+
+                                } catch (error) {
+                                    console.error('Error generating PDF:', error);
+                                    ErrorHandler.showError('Failed to generate PDF');
+                                    downloadBtn.disabled = false;
+                                    downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
+                                }
+                            });
+                        }
+
+                        if (editBtn) {
+                            editBtn.addEventListener('click', function() {
+                                const isEditing = contentDiv.classList.contains('edit-mode');
+                                const checkboxes = contentDiv.querySelectorAll('.remove-player-checkbox');
+                                
+                                if (!isEditing) {
+                                    // Enter edit mode
+                                    contentDiv.classList.add('edit-mode');
+                                    this.innerHTML = `
+                                        <i class="fas fa-trash"></i> Remove Selected
+                                    `;
+                                    this.classList.remove('btn-secondary');
+                                    this.classList.add('btn-danger');
+                                    checkboxes.forEach(cb => cb.style.display = 'block');
+                                } else {
+                                    // Get selected players to remove
+                                    const selectedPlayers = Array.from(checkboxes)
+                                        .filter(cb => cb.checked)
+                                        .map(cb => cb.closest('.enrolled-player-item').dataset.playerId);
+
+                                    if (selectedPlayers.length > 0) {
+                                        // Confirm removal
+                                        if (confirm(`Remove ${selectedPlayers.length} player(s) from this tournament?`)) {
+                                            removePlayersFromTournament(tournamentId, selectedPlayers, schoolId)
+                                                .then(() => {
+                                                    // Refresh the list
+                                                    toggleBtn.click();
+                                                    toggleBtn.click();
+                                                })
+                                                .catch(error => {
+                                                    ErrorHandler.handleError(error, 'Failed to remove players');
+                                                });
+                                        }
+                                    }
+
+                                    // Exit edit mode
+                                    contentDiv.classList.remove('edit-mode');
+                                    this.innerHTML = `
+                                        <i class="fas fa-edit"></i> Edit List
+                                    `;
+                                    this.classList.remove('btn-danger');
+                                    this.classList.add('btn-secondary');
+                                    checkboxes.forEach(cb => cb.style.display = 'none');
+                                }
+                            });
+                        }
+
+                        // Add click handler for player items in edit mode
+                        contentDiv.querySelectorAll('.enrolled-player-item').forEach(item => {
+                            item.addEventListener('click', function(e) {
+                                if (contentDiv.classList.contains('edit-mode') && e.target !== this.querySelector('.remove-player-checkbox')) {
+                                    const checkbox = this.querySelector('.remove-player-checkbox');
+                                    checkbox.checked = !checkbox.checked;
+                                }
+                            });
+                        });
+                    } catch (error) {
+                        ErrorHandler.handleError(error, 'Failed to load enrolled players');
+                        dropdown.querySelector('.enrolled-players-content').innerHTML = `
+                            <div class="error-message">
+                                Failed to load enrolled players. Please try again.
+                            </div>
+                        `;
+                    }
+                }
+
+                // Helper function to remove players
+                async function removePlayersFromTournament(tournamentId, playerIds, schoolId) {
+                    const { error } = await supabase
+                        .from('tournament_enrollments')
+                        .delete()
+                        .eq('tournament_id', tournamentId)
+                        .eq('school_id', schoolId)
+                        .in('player_id', playerIds);
+
+                    if (error) throw error;
+                    ErrorHandler.showSuccess(`Successfully removed ${playerIds.length} player(s)`);
+                }
+
+                // Toggle visibility
+                this.classList.toggle('active');
+                dropdown.style.display = isActive ? 'none' : 'block';
+
+                // Close other open dropdowns
+                document.querySelectorAll('.enrolled-players-dropdown').forEach(d => {
+                    if (d !== dropdown) {
+                        d.style.display = 'none';
+                        const btn = d.parentElement.querySelector('.toggle-players-btn');
+                        if (btn) btn.classList.remove('active');
+                    }
+                });
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!card.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                    toggleBtn.classList.remove('active');
+                }
+            });
+        }
+    } else {
+        const enrollBtn = card.querySelector('.enroll-tournament-btn');
+        if (enrollBtn) {
+            enrollBtn.addEventListener('click', function() {
+                const tournamentId = card.dataset.tournamentId;
+                const tournamentName = card.dataset.tournamentName;
+                console.log('Enrolling in tournament:', tournamentId, tournamentName);
+                console.log('Tournament ID length:', tournamentId.length);
+                showPlayerSelection(tournamentId, tournamentName);
+            });
+        }
+    }
+    
+    return card;
+}
+
+        async function showPlayerSelection(tournamentId, tournamentName, isAddingMore = false) {
+    console.log('=== showPlayerSelection called ===');
+    console.log('tournamentId received:', tournamentId);
+    console.log('tournamentId type:', typeof tournamentId);
+    console.log('tournamentId length:', tournamentId?.length);
+    console.log('tournamentName:', tournamentName);
+    console.log('isAddingMore:', isAddingMore);
+    console.log('===================================');
+    
+    const playerSelectionSection = document.getElementById('playerSelectionSection');
+    const tournamentsGrid = document.getElementById('overlayTournamentsGrid');
+
+    if (!playerSelectionSection || !tournamentsGrid) {
+        ErrorHandler.showError('Could not find required elements');
+        return;
+    }
+
+    // Update tournament name
+    const tournamentNameElement = playerSelectionSection.querySelector('.tournament-name');
+    if (tournamentNameElement) {
+        tournamentNameElement.textContent = tournamentName;
+    }
+
+    // Switch views
+    tournamentsGrid.style.display = 'none';
+    playerSelectionSection.style.display = 'block';
+
+    // Get BOTH identifiers
+    const schoolUUID = document.querySelector('[data-field="schoolId"]')?.textContent;
+    const centerNumber = document.querySelector('[data-field="centerNumber"]')?.textContent;
+    
+    console.log('schoolId for query:', schoolUUID);
+    
+    if (!schoolUUID || !centerNumber) {
+        ErrorHandler.showError('School ID not found');
+        return;
+    }
+
+            try {
+                // Show loading state
+                const playerList = playerSelectionSection.querySelector('.player-selection-list');
+                if (playerList) {
+                    playerList.innerHTML = `
+                        <div class="loading-placeholder">
+                            <div class="spinner"></div>
+                            <p>Loading players...</p>
+                        </div>
+                    `;
+                }
+
+                // Get existing enrollments (use UUID for enrollments table)
+                console.log('About to fetch existing enrollments...');
+                console.log('tournamentId for query:', tournamentId);
+                console.log('tournamentId length:', tournamentId?.length);
+                console.log('schoolId for query:', schoolUUID);
+
+                const { data: existingEnrollments, error: enrollmentsError } = await supabase
+                    .from('tournament_enrollments')
+                    .select('player_id')
+                    .eq('tournament_id', tournamentId)
+                    .eq('school_id', schoolUUID);  // Use UUID here
+                console.log('Enrollments query error:', enrollmentsError);
+                console.log('Enrollments query result:', existingEnrollments);
+
+                if (enrollmentsError) throw enrollmentsError;
+                const enrolledPlayerIds = existingEnrollments?.map(e => e.player_id) || [];
+
+                // Get players for the school with photos (use center_number for players table)
+                const { data: players, error: playersError } = await supabase
+                    .from('players')
+                    .select(`
+                        *,
+                        photo_url
+                    `)
+                    .eq('school_id', schoolUUID)  // Use center_number here!
+                    .order('age_category')
+                    .order('gender')
+                    .order('full_name');
+
+                if (playersError) throw playersError;
+                if (!players || players.length === 0) {
+                    ErrorHandler.showError('No players found for your school. Please register players first.');
+                    return;
+                }
+
+                // Group players by category and gender
+                const groups = {
+                    boys: {
+                        U20: players.filter(p => p.gender === 'male' && p.age_category === 'U20'),
+                        U17: players.filter(p => p.gender === 'male' && p.age_category === 'U17'),
+                        U15: players.filter(p => p.gender === 'male' && p.age_category === 'U15')
+                    },
+                    girls: {
+                        U20: players.filter(p => p.gender === 'female' && p.age_category === 'U20'),
+                        U17: players.filter(p => p.gender === 'female' && p.age_category === 'U17'),
+                        U15: players.filter(p => p.gender === 'female' && p.age_category === 'U15')
+                    }
+                };
+
+                // Generate HTML for the player list
+                if (playerList) {
+                    let html = '';
+                    
+                    // Boys sections
+                    html += '<div class="player-category"><h4>Boys Teams</h4>';
+                    for (const [category, categoryPlayers] of Object.entries(groups.boys)) {
+                        if (categoryPlayers.length > 0) {
+                            html += `
+                                <div class="age-category">
+                                    <h5>${category}</h5>
+                                    ${categoryPlayers.map(player => createPlayerCheckboxItem(player, enrolledPlayerIds)).join('')}
+                                </div>
+                            `;
+                        }
+                    }
+                    html += '</div>';
+
+                    // Girls sections
+                    html += '<div class="player-category"><h4>Girls Teams</h4>';
+                    for (const [category, categoryPlayers] of Object.entries(groups.girls)) {
+                        if (categoryPlayers.length > 0) {
+                            html += `
+                                <div class="age-category">
+                                    <h5>${category}</h5>
+                                    ${categoryPlayers.map(player => createPlayerCheckboxItem(player, enrolledPlayerIds)).join('')}
+                                </div>
+                            `;
+                        }
+                    }
+                    html += '</div>';
+
+                    playerList.innerHTML = html;
+
+                    // Add styles for the new structure
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        .player-category {
+                            margin-bottom: 20px;
+                        }
+                        .player-category h4 {
+                            color: #c00;
+                            font-size: 1.2rem;
+                            margin-bottom: 15px;
+                            padding-bottom: 5px;
+                            border-bottom: 2px solid #c00;
+                        }
+                        .age-category {
+                            margin-bottom: 15px;
+                            background: #fff;
+                            border-radius: 8px;
+                            padding: 15px;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        }
+                        .age-category h5 {
+                            color: #666;
+                            font-size: 1.1rem;
+                            margin-bottom: 10px;
+                        }
+                        .player-photo {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            margin-right: 15px;
+                            object-fit: cover;
+                        }
+                        .player-checkbox-item {
+                            display: flex;
+                            align-items: center;
+                            padding: 8px;
+                            border-bottom: 1px solid #eee;
+                            transition: background-color 0.2s;
+                        }
+                        .player-checkbox-item:hover {
+                            background-color: #f8f9fa;
+                        }
+                        .player-checkbox-item:last-child {
+                            border-bottom: none;
+                        }
+                        .player-position {
+                            color: #666;
+                            font-size: 0.9rem;
+                            margin-left: 10px;
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+
+                // Setup buttons (pass UUID for enrollment)
+                setupEnrollmentButtons(tournamentId, schoolUUID, tournamentName, isAddingMore);
+
+            } catch (error) {
+                ErrorHandler.handleError(error, 'Failed to load players');
+            }
+        }
+
+        function createPlayerCheckboxItem(player, enrolledPlayerIds) {
+            const photoUrl = player.photo_url 
+                ? supabase.storage.from('player_photos').getPublicUrl(player.photo_url).data.publicUrl
+                : 'https://placehold.co/40x40/EFEFEF/333333?text=...';
+
+            return `
+                <div class="player-checkbox-item">
+                    <input type="checkbox" 
+                           value="${player.id}" 
+                           ${enrolledPlayerIds.includes(player.id) ? 'checked disabled' : ''}
+                           data-player-name="${player.full_name}"
+                           data-category="${player.age_category}"
+                    >
+                    <img src="${photoUrl}" 
+                         alt="${player.full_name}" 
+                         class="player-photo"
+                         onerror="this.src='https://placehold.co/40x40/EFEFEF/333333?text=...'">
+                    <div class="player-info">
+                        <span class="player-name">${player.full_name}</span>
+                        <span class="player-details">
+                            Age: ${player.age || 'N/A'}
+                            <span class="player-position">${player.position || ''}</span>
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupEnrollmentButtons(tournamentId, schoolId, tournamentName, isAddingMore = false) {
+            const backBtn = document.getElementById('backToTournaments');
+            const confirmBtn = document.getElementById('confirmEnrollment');
+            const playerSelectionSection = document.getElementById('playerSelectionSection');
+            const tournamentsGrid = document.getElementById('overlayTournamentsGrid');
+
+            if (backBtn) {
+                // Update back button text if adding more players
+                backBtn.innerHTML = isAddingMore ? 
+                    '<i class="fas fa-arrow-left"></i> Back to Player List' :
+                    '<i class="fas fa-arrow-left"></i> Back to Tournaments';
+                    
+                backBtn.onclick = () => {
+                    if (isAddingMore) {
+                        // If we're adding more players, just close the selection dialog
+                        playerSelectionSection.style.display = 'none';
+                        // Don't show the tournaments grid - we want to stay in the dropdown view
+                    } else {
+                        playerSelectionSection.style.display = 'none';
+                        tournamentsGrid.style.display = 'block';
+                    }
+                };
+            }
+
+            if (confirmBtn) {
+                confirmBtn.onclick = async () => {
+                    const checkboxes = document.querySelectorAll('.player-checkbox-item input[type="checkbox"]:checked:not(:disabled)');
+                    if (!checkboxes.length) {
+                        ErrorHandler.showError('Please select at least one player to enroll');
+                        return;
+                    }
+
+                    try {
+                        confirmBtn.disabled = true;
+                        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enrolling...';
+            console.log('=== Creating enrollment data ===');
+            console.log('tournamentId:', tournamentId);
+            console.log('tournamentId length:', tournamentId.length);
+            console.log('schoolId:', schoolId);
+            console.log('================================');
+
+                        const enrollmentData = Array.from(checkboxes).map(cb => ({
+                            tournament_id: tournamentId,
+                            school_id: schoolId,
+                            player_id: cb.value,
+                            category: cb.dataset.category,
+                            enrollment_date: new Date().toISOString(),
+                        }));
+
+                        const { error } = await supabase
+                            .from('tournament_enrollments')
+                            .insert(enrollmentData);
+
+                        if (error) throw error;
+
+                        checkboxes.forEach(cb => {
+                            cb.disabled = true;
+                            cb.checked = true;
+                        });
+
+                        confirmBtn.innerHTML = '<i class="fas fa-check"></i> Enrolled Successfully';
+                        ErrorHandler.showSuccess(`${checkboxes.length} player(s) enrolled successfully!`);
+
+                        setTimeout(() => {
+                            playerSelectionSection.style.display = 'none';
+                            tournamentsGrid.style.display = 'block';
+                            loadTournaments(schoolId);
+                        }, 2000);
+
+                    } catch (error) {
+                        ErrorHandler.handleError(error, 'Failed to enroll players');
+                        confirmBtn.disabled = false;
+                        confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirm Enrollment';
+                    }
+                };
+            }
+        }
+
+        // Make function globally available
+        // Function to show enrolled players
+        async function showEnrolledPlayers(tournamentId, tournamentName) {
+            const schoolUUID = document.querySelector('[data-field="schoolId"]')?.textContent;
+            if (!schoolUUID) {
+                ErrorHandler.showError('School ID not found');
+                return;
+            }
+
+            try {
+                // Get enrolled players with their details
+                const { data: enrollments, error: enrollmentsError } = await supabase
+                    .from('tournament_enrollments')
+                    .select(`
+                        player_id,
+                        players (
+                            id,
+                            full_name,
+                            age_category,
+                            gender,
+                            age,
+                            position,
+                            photo_url
+                        )
+                    `)
+                    .eq('tournament_id', tournamentId)
+                    .eq('school_id', schoolUUID);
+
+                if (enrollmentsError) throw enrollmentsError;
+
+                // Group players by category
+                const playersByCategory = {
+                    boys: {
+                        U20: [],
+                        U17: [],
+                        U15: []
+                    },
+                    girls: {
+                        U20: [],
+                        U17: [],
+                        U15: []
+                    }
+                };
+
+                enrollments.forEach(enrollment => {
+                    const player = enrollment.players;
+                    if (player) {
+                        const gender = player.gender === 'male' ? 'boys' : 'girls';
+                        if (playersByCategory[gender][player.age_category]) {
+                            playersByCategory[gender][player.age_category].push(player);
+                        }
+                    }
+                });
+
+                // Create modal content
+                let modalContent = `
+                    <div class="enrolled-players-header">
+                        <h3>${tournamentName}</h3>
+                        <p>Enrolled Players</p>
+                    </div>
+                    <div class="enrolled-players-list">
+                `;
+
+                // Add boys section
+                modalContent += '<div class="player-category"><h4>Boys Teams</h4>';
+                for (const [category, players] of Object.entries(playersByCategory.boys)) {
+                    if (players.length > 0) {
+                        modalContent += `
+                            <div class="age-category">
+                                <h5>${category}</h5>
+                                ${players.map(player => `
+                                    <div class="enrolled-player-item">
+                                        <img src="${player.photo_url 
+                                            ? supabase.storage.from('player_photos').getPublicUrl(player.photo_url).data.publicUrl 
+                                            : 'https://placehold.co/40x40/EFEFEF/333333?text=...'}" 
+                                            alt="${player.full_name}"
+                                            class="player-photo">
+                                        <div class="player-info">
+                                            <span class="player-name">${player.full_name}</span>
+                                            <span class="player-details">
+                                                Age: ${player.age || 'N/A'}
+                                                ${player.position ? `<span class="player-position">${player.position}</span>` : ''}
+                                            </span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+                }
+                modalContent += '</div>';
+
+                // Add girls section
+                modalContent += '<div class="player-category"><h4>Girls Teams</h4>';
+                for (const [category, players] of Object.entries(playersByCategory.girls)) {
+                    if (players.length > 0) {
+                        modalContent += `
+                            <div class="age-category">
+                                <h5>${category}</h5>
+                                ${players.map(player => `
+                                    <div class="enrolled-player-item">
+                                        <img src="${player.photo_url 
+                                            ? supabase.storage.from('player_photos').getPublicUrl(player.photo_url).data.publicUrl 
+                                            : 'https://placehold.co/40x40/EFEFEF/333333?text=...'}" 
+                                            alt="${player.full_name}"
+                                            class="player-photo">
+                                        <div class="player-info">
+                                            <span class="player-name">${player.full_name}</span>
+                                            <span class="player-details">
+                                                Age: ${player.age || 'N/A'}
+                                                ${player.position ? `<span class="player-position">${player.position}</span>` : ''}
+                                            </span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+                }
+                modalContent += '</div>';
+                modalContent += '</div>';
+
+                // Show in modal
+                const enrolledPlayersModal = document.getElementById('enrolledPlayersModal');
+                const modalBody = enrolledPlayersModal.querySelector('.modal-body');
+                modalBody.innerHTML = modalContent;
+                enrolledPlayersModal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+
+            } catch (error) {
+                ErrorHandler.handleError(error, 'Failed to load enrolled players');
+            }
+        }
+
+        window.showPlayerSelection = showPlayerSelection;
+    </script>
+
+    <!-- Enrolled Players Modal -->
+    <div id="enrolledPlayersModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-users"></i> Enrolled Players</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Additional styles for enrolled players modal */
+        .enrolled-players-header {
+            margin-bottom: 20px;
+        }
+
+        .enrolled-players-header h3 {
+            color: #c00;
+            margin-bottom: 5px;
+        }
+
+        .enrolled-player-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .enrolled-player-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-header {
+            background: #c00;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+    </style>
+
+    <script>
+        // Add modal close functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('enrolledPlayersModal');
+            const closeBtn = modal.querySelector('.close-modal');
+
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+
+            window.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USRA 2025 Activity Calendar</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="apple-touch-icon" href="photos/logos/usraLogo.png">
+    <link rel="shortcut icon" type="image/png" href="photos/logos/usraLogo.png">
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind for custom theme -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'usra-red': '#B91C1C', // A deep, strong red
+                        'usra-dark': '#7F1D1D', // Darker red for hover/accents
+                        'usra-light': '#FEE2E2', // Light red for backgrounds
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom CSS for smooth scrolling and general styling */
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            color: #1f2937;
+        }
+
+        /* Hover animation for event cards */
+        .event-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-left: 4px solid var(--usra-red); /* Ensures red border stays */
+        }
+        .event-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(185, 28, 28, 0.2), 0 4px 6px -4px rgba(185, 28, 28, 0.1);
+            background-color: #fff;
+        }
+
+        /* Hover animation for links in the footer/header */
+        .hover-effect {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .hover-effect:hover {
+            color: #FFFFFF;
+            background-color: #B91C1C;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-50 bg-usra-red shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="hover:opacity-90 transition-opacity">
+                    <img src="photos/logos/usraLogo.png" alt="USRA Logo" class="h-12 w-auto rounded-lg">
+                </a>
+            </div>
+            <nav class="space-x-6 hidden sm:block">
+                <a href="#calendar" class="text-white hover:text-gray-200 transition duration-300 font-medium hover:underline">Calendar</a>
+                <a href="#contact" class="text-white hover:text-gray-200 transition duration-300 font-medium hover:underline">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-white pt-16 pb-20 text-center border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-usra-red text-sm font-bold uppercase tracking-widest mb-3">UGANDA SCHOOLS RUGBY ASSOCIATION</p>
+            <h2 class="text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
+                2025 Activity Calendar
+            </h2>
+            <p class="text-xl text-gray-600 mb-8">
+                Affiliate Member, Uganda Rugby Union (URU). Key dates for a year of intense school rugby action.
+            </p>
+            <a href="#calendar" class="inline-block px-8 py-3 text-lg font-bold text-white bg-usra-red rounded-lg shadow-lg hover:bg-usra-dark transition duration-300">
+                View Schedule
+            </a>
+        </div>
+    </section>
+
+    <!-- Calendar Section - Redesigned Layout -->
+    <section id="calendar" class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 class="text-4xl font-extrabold text-gray-900 mb-12 text-center border-b-2 border-usra-light pb-4">Yearly Timeline</h3>
+
+            <div class="space-y-8">
+
+                <!-- 1. EXCOM ANNUAL PLANNING MEETING -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">JAN 15</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">1. EXCOM Annual Planning Meeting</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> EXCOM
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. BALL GAME ONE QUALIFIERS (Complex Group) -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">FEB 23 - APR 06</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-3">2. Ball Game One Qualifiers</h4>
+                            <p class="text-gray-700 font-semibold mb-3">Multiple regional leagues determining National qualifiers:</p>
+                            <ul class="space-y-2 text-sm text-gray-600 list-disc ml-4">
+                                <li>Central Schools (Main/2nd Div/Girls' League): <strong class="text-gray-800">02 Mar - 30 Mar</strong></li>
+                                <li>Eastern, Western, & Northern Regions: <strong class="text-gray-800">02 Mar - 06 Apr</strong></li>
+                            </ul>
+                            <p class="mt-3 text-sm text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> Regional Coordination Committees & National Secretariat/RDOs
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. REGIONAL BALL GAME ONE QUALIFIERS EVALUATION MEETINGS -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">APR 06 - APR 13</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">3. Regional Ball Game One Qualifiers Evaluation Meetings</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> Regional Representatives
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. BALL GAMES ONE EVALUATION AND PLANNING MEETING -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">APR 19</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">4. Ball Games One Evaluation & Planning Meeting</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> EXCOM
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. USSSA NATIONAL BALL GAME ONE -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">MAY 04 - MAY 14</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">5. USSSA National Ball Game One</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> Qualified Schools
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. BALL GAME TWO QUALIFIERS (Complex Group) -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">JUN 08 - JUN 29</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-3">6. Ball Game Two Qualifiers (Regional 7s Rugby)</h4>
+                            <p class="text-gray-700 font-semibold mb-3">Key regional 7s tournaments (Boys and Girls):</p>
+                            <ul class="space-y-2 text-sm text-gray-600 list-disc ml-4">
+                                <li>Central: Kabaka Coronation 7s</li>
+                                <li>Eastern: Kyabazinga 7s</li>
+                                <li>Western: Western Schools 7s</li>
+                                <li>Northern: Lango Won-Nyaci 7s & Acholi Rwot Adwong 7s</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. BALL GAME TWO QUALIFIERS EVALUATION AND AGM PLANNING MEETING -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">JUL 05</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">7. Ball Game Two Evaluation and AGM Planning Meeting</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> EXCOM
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. USSSA NATIONAL BALL GAME TWO -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">JUL 09 - JUL 18</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">8. USSSA National Ball Game Two</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> Qualified Schools
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. FEASSA GAMES -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">AUG 19 - AUG 27</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">9. FEASSA Games (East Africa Secondary School Sports)</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> Qualified Schools
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 10. ANNUAL GENERAL MEETING -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">SEP 06</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">10. Annual General Meeting (AGM)</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> EXCOM
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 11. INDEPENDENCE CUP -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">OCT 09</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">11. Independence Cup</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> All Regional Representatives
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 12. ABU DHABI WORLD SCHOOLS FESTIVAL -->
+                <div class="event-card bg-white p-6 rounded-xl border-usra-red">
+                    <div class="md:grid md:grid-cols-4 lg:grid-cols-5 items-start">
+                        <div class="col-span-1 mb-4 md:mb-0">
+                            <span class="text-xl font-extrabold text-white bg-usra-red px-4 py-1 rounded-md inline-block">DEC 14 - DEC 20</span>
+                        </div>
+                        <div class="col-span-3 lg:col-span-4 border-l-4 pl-6 border-usra-light">
+                            <h4 class="text-2xl font-bold text-gray-900 mb-1">12. Abu Dhabi World Schools Festival</h4>
+                            <p class="text-gray-600">
+                                <strong class="text-gray-800">Responsible Body:</strong> National Schools U20 Select, URU, EXCOM
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section / Footer -->
+    <footer id="contact" class="bg-gray-900 py-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+            <h3 class="text-3xl font-bold text-center text-usra-red mb-8">Get In Touch</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+
+                <!-- Address -->
+                <div class="p-4 rounded-xl border border-gray-700 hover-effect hover:bg-usra-red hover:border-usra-red transition duration-300">
+                    <p class="text-xl font-semibold mb-2">Secretariat Location</p>
+                    <p class="text-gray-400">Lugogo Tennis Club, Lugogo Bypass</p>
+                    <p class="text-gray-400">P. O. Box 22108, Kampala, UGANDA</p>
+                </div>
+
+                <!-- Phone -->
+                <div class="p-4 rounded-xl border border-gray-700 hover-effect hover:bg-usra-red hover:border-usra-red transition duration-300">
+                    <p class="text-xl font-semibold mb-2">Contact Numbers</p>
+                    <p class="text-gray-400">Chairperson: +256 783 562 222</p>
+                    <p class="text-gray-400">General Secretary: +256 788 378 660</p>
+                </div>
+
+                <!-- Email & Social -->
+                <div class="p-4 rounded-xl border border-gray-700 hover-effect hover:bg-usra-red hover:border-usra-red transition duration-300">
+                    <p class="text-xl font-semibold mb-2">Email & Social</p>
+                    <p class="text-gray-400">Email: <a href="mailto:usrasecretariat@gmail.com" class="text-usra-light hover:underline transition duration-300">usrasecretariat@gmail.com</a></p>
+                    <p class="text-gray-400">X (Twitter): <a href="https://twitter.com/USRA_Officiall" target="_blank" class="text-usra-light hover:underline transition duration-300">@USRA_Officiall</a></p>
+                </div>
+
+            </div>
+        </div>
+        <div class="mt-12 text-center text-gray-500 text-sm border-t border-gray-800 pt-6">
+            &copy; 2025 Uganda Schools Rugby Association. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Vercel Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

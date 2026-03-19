@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Registration - USRA</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="apple-touch-icon" href="photos/logos/usraLogo.png">
+    <link rel="shortcut icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="registrationTest.css"> <!-- Reusing some styles -->
+    <link rel="stylesheet" href="player-registration.css"> <!-- New specific styles -->
+    <link rel="stylesheet" href="error-modal.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header id="navbar">
+        <div class="container">
+            <div class="nav-left">
+                <a href="dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i><span>Back to Dashboard</span></a>
+            </div>
+            <div class="nav-center">
+                <h1 class="page-title">Player Registration</h1>
+            </div>
+            <div class="nav-right">
+                <!-- Placeholder for balance if needed -->
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="reg-hero">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <h1>New Player Registration</h1>
+                <p>Enter the details for the new player below.</p>
+            </div>
+        </section>
+        
+        <section class="registration-main">
+            <div class="container">
+                <div class="form-wrapper">
+                    <div id="form-error-message" class="error-message" style="display: none;"></div>
+                    <form id="playerRegistrationForm">
+                        <!-- Player Details -->
+                        <div class="form-step active">
+                            <h3 class="step-title"><i class="fas fa-user"></i> Player's Personal Details</h3>
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label for="playerPhoto">Player Photo*</label>
+                                    <div class="file-upload">
+                                        <input type="file" id="playerPhoto" class="file-input" accept="image/*" data-preview="photo-preview" required>
+                                        <label for="playerPhoto" class="file-label"><i class="fas fa-camera"></i><span class="file-label-text">Choose photo...</span></label>
+                                    </div>
+                                    <img id="photo-preview" class="image-preview" alt="Player Photo Preview">
+                                </div>
+                                <div class="form-group"><label for="firstName">First Name*</label><input type="text" id="firstName" required></div>
+                                <div class="form-group"><label for="middleName">Middle Name</label><input type="text" id="middleName"></div>
+                                <div class="form-group"><label for="lastName">Last Name*</label><input type="text" id="lastName" required></div>
+                                
+                                <div class="form-group dob-group">
+                                    <label>Date of Birth*</label>
+                                    <div class="dob-selectors">
+                                        <select id="dobDay" required><option value="">Day</option></select>
+                                        <select id="dobMonth" required><option value="">Month</option></select>
+                                        <select id="dobYear" required><option value="">Year</option></select>
+                                    </div>
+                                </div>
+                                <div class="form-group"><label for="age">Age</label><input type="text" id="age" disabled placeholder="Calculated automatically"></div>
+                                
+                                <div class="form-group">
+                                    <label for="gender">Gender*</label>
+                                    <select id="gender" required>
+                                        <option value="">Select...</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="position">Playing Position*</label>
+                                    <select id="position" required>
+                                        <option value="">Select Position...</option>
+                                        <option value="prop">Prop</option>
+                                        <option value="hooker">Hooker</option>
+                                        <option value="lock">Lock</option>
+                                        <option value="flanker">Flanker</option>
+                                        <option value="eigth-man">Eighth-man</option>
+                                        <option value="scrumhalf">Scrumhalf</option>
+                                        <option value="flyhalf">Flyhalf</option>
+                                        <option value="center">Center</option>
+                                        <option value="winger">Winger</option>
+                                        <option value="full-back">Full-back</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="playerId">Player ID</label>
+                                    <input type="text" id="playerId" readonly disabled>
+                                    <small class="id-note" style="color: #666; margin-top: 5px; display: block;">
+                                        ID will be automatically generated upon registration
+                                    </small>
+                                </div>
+                                
+                            </div>
+
+                            <h3 class="step-title"><i class="fas fa-graduation-cap"></i> Academic Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group"><label for="className">Class*</label><input type="text" id="className" required></div>
+                                <div class="form-group"><label for="lin">Learner's Identification Number (LIN)</label><input type="text" id="lin"></div>
+                                <div class="form-group"><label for="pleIndex">PLE Index Number*</label><input type="text" id="pleIndex" required></div>
+                                <div class="form-group"><label for="pleYear">PLE Year of Sitting*</label><input type="number" id="pleYear" required placeholder="YYYY"></div>
+                                <div class="form-group">
+                                    <label for="documentType">Document Type*</label>
+                                    <select id="documentType" required>
+                                        <option value="ple">PLE Certificate</option>
+                                        <option value="passport">Passport</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="pleCertificate">Upload Document*</label>
+                                     <div class="file-upload">
+                                        <input type="file" id="pleCertificate" class="file-input" accept=".pdf,image/*" required>
+                                        <label for="pleCertificate" class="file-label"><i class="fas fa-file-upload"></i><span class="file-label-text">Upload document...</span></label>
+                                    </div>
+                                    <small class="document-note" style="color: #666; margin-top: 5px; display: block;">
+                                        Please upload the selected document type (PLE Certificate or Passport)
+                                    </small>
+                                </div>
+                            </div>
+
+                            <h3 class="step-title"><i class="fas fa-users"></i> Parent/Guardian Information</h3>
+                            <div class="form-grid">
+                                <div class="form-group"><label for="parentRelationship">Relationship*</label><select id="parentRelationship" required><option value="">Select...</option><option>Father</option><option>Mother</option><option>Guardian</option></select></div>
+                                <div class="form-group"><label for="parentNames">Full Names*</label><input type="text" id="parentNames" required></div>
+                                <div class="form-group"><label for="parentContact">Contact*</label><input type="tel" id="parentContact" required></div>
+                                <div class="form-group"><label for="parentNin">NIN</label><input type="text" id="parentNin"></div>
+                                <div class="form-group full-width"><label for="parentResidence">Residence*</label><input type="text" id="parentResidence" required></div>
+                            </div>
+                            
+                            <div class="warning-message" style="margin: 20px 0; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Important Notice:</strong> Please ensure all information is accurate before submission. Once a player is registered, their information cannot be edited or deleted.
+                            </div>
+                            
+                            <div class="step-navigation">
+                                <button type="submit" id="submitBtn" class="btn btn-primary">Submit Player Registration</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Scripts -->
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- App Scripts -->
+    <script src="createClient.js"></script>
+    <script src="errorHandler.js"></script>
+    <script src="player-registration.js"></script>
+
+    <!-- Error Handling Styles -->
+    <link rel="stylesheet" href="error-modal.css">
+    
+    <!-- Vercel Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - USRA</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="apple-touch-icon" href="photos/logos/usraLogo.png">
+    <link rel="shortcut icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="stylesheet" href="signinTest.css">
+    <link rel="stylesheet" href="modal.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="photos/logos/usraLogo.png" alt="USRA Logo" style="height: 40px; width: auto;">
+            </a>
+            <nav class="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About Us</a></li>
+                    <li><a href="signin.html">Sign In</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="index.html#leadership">Leadership</a></li>
+                            <li><a href="index.html#workplan">Workplan</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <a href="registration.html" class="btn btn-secondary">Register Now</a>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="signin-section">
+            <div class="signin-card">
+                <h2>Sign In to Your Account</h2>
+                <p>Welcome back! Please enter your details.</p>
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                <form id="signInForm" autocomplete="off">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" placeholder="Enter your password" required autocomplete="new-password">
+                            <i class="fas fa-eye password-toggle"></i>
+                        </div>
+                    </div>
+                    <div class="form-options">
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </form>
+                <div class="redirect-link">
+                    <p>Don't have an account? <a href="registration.html">Register Now</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- CRITICAL: Load scripts in the correct order -->
+    <!-- 1. Load Supabase library first -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- 2. Load error handler (if it exists) -->
+    <script src="errorHandler.js" onerror="console.log('errorHandler.js not found - using fallback')"></script>
+    
+    <!-- 3. Initialize Supabase client -->
+    <script src="createClient.js"></script>
+    
+    <!-- 4. Load other scripts -->
+    <script src="script.js"></script>
+    
+    <!-- 5. Load sign-in functionality LAST -->
+    <script src="signin.js"></script>
+</body>
+</html>

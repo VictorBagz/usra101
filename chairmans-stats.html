@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chairman's Dashboard - Registration Statistics</title>
+    <link rel="icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="apple-touch-icon" href="photos/logos/usraLogo.png">
+    <link rel="shortcut icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: #c00;
+            border-bottom: 3px solid #c00;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 50px 12px 20px;
+            border: 2px solid #c00;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #c00;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            background: #a00;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 5px rgba(204, 0, 0, 0.3);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+
+        .search-result-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-result-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .search-result-school {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #c00;
+        }
+
+        .stats-header i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .stats-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .stats-change {
+            font-size: 0.9rem;
+            color: #28a745;
+        }
+
+        .stats-change.negative {
+            color: #dc3545;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-header {
+            color: #c00;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading .spinner {
+            border: 4px solid rgba(204, 0, 0, 0.1);
+            border-left-color: #c00;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .region-list {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .region-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .region-name {
+            font-weight: 600;
+        }
+
+        .region-count {
+            color: #c00;
+            font-weight: 700;
+        }
+
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chart-line"></i> Registration Statistics</h1>
+            <p>Live overview of player and school registrations</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-input-wrapper">
+                <input type="text" id="playerSearch" placeholder="Search for player names..." class="search-input">
+                <button id="searchButton" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            <div id="searchResults" class="search-results"></div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stats-card clickable" id="totalSchools" onclick="showSchoolsList()">
+                <div class="stats-header">
+                    <i class="fas fa-school"></i>
+                    <span class="stats-title">Registered Schools</span>
+                </div>
+                <div class="stats-number">...</div>
+                <div class="stats-change">Loading...</div>
+                <div class="click-hint">Click to view schools list</div>
+            </div>
+
+            <div class="stats-card" id="totalPlayers">
+                <div class="stats-header">
+                    <i class="fas fa-users"></i>
+                    <span class="stats-title">Registered Players</span>
+                </div>
+                <div class="stats-number">...</div>
+                <div class="stats-change">Loading...</div>
+            </div>
+
+            <div class="stats-card" id="activeEnrollments">
+                <div class="stats-header">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span class="stats-title">Active Tournament Enrollments</span>
+                </div>
+                <div class="stats-number">...</div>
+                <div class="stats-change">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Players by Region -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <i class="fas fa-map-marked-alt"></i>
+                    Players by Region
+                </div>
+                <canvas id="playersByRegionChart"></canvas>
+            </div>
+
+            <!-- Players by Gender and Age Category -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <i class="fas fa-users"></i>
+                    Players by Category
+                </div>
+                <canvas id="playersByCategoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Regional Schools Distribution -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <i class="fas fa-school"></i>
+                Schools by Region
+            </div>
+            <canvas id="schoolsByRegionChart"></canvas>
+            <div class="region-list" id="regionList">
+                <!-- Region items will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Messages Section -->
+        <div class="chart-container" style="margin-top: 30px;">
+            <div class="chart-header">
+                <i class="fas fa-envelope"></i>
+                Contact Messages
+            </div>
+            <div id="messagesContainer" class="messages-list">
+                <!-- Messages will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- News Management Section -->
+        <div class="chart-container" style="margin-top: 30px;">
+            <div class="chart-header">
+                <i class="fas fa-newspaper"></i>
+                News Management
+                <button onclick="openAddNewsModal()" class="btn-add-news">
+                    <i class="fas fa-plus"></i> Add News
+                </button>
+            </div>
+            <div id="newsContainer" class="news-management-list">
+                <!-- News items will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Schools List Modal -->
+    <div id="schoolsModal" class="schools-modal">
+        <div class="schools-modal-content">
+            <div class="schools-modal-header">
+                <h2 class="schools-modal-title">
+                    <i class="fas fa-school"></i> Registered Schools
+                </h2>
+                <button onclick="closeSchoolsModal()" class="close-modal">&times;</button>
+            </div>
+            <input type="text" id="schoolsSearch" class="schools-search" placeholder="Search schools...">
+            <div id="schoolsList" class="schools-list">
+                <!-- Schools will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- News Modal -->
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeNewsModal()">&times;</span>
+            <h2 id="newsModalTitle">Add News</h2>
+            <form id="newsForm">
+                <input type="hidden" id="newsId">
+                <div class="form-group">
+                    <label for="newsType">News Type</label>
+                    <select id="newsType" required>
+                        <option value="">Select Type</option>
+                        <option value="breaking">Breaking News</option>
+                        <option value="featured">Featured News</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newsTitle">Title</label>
+                    <input type="text" id="newsTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="newsContent">Content</label>
+                    <div id="newsEditor" style="height: 300px; background-color: white; border: 1px solid #ddd; border-radius: 4px;"></div>
+                    <input type="hidden" id="newsContent">
+                </div>
+                <div class="form-group">
+                    <label for="newsSource">Source</label>
+                    <select id="newsSource" required>
+                        <option value="">Select Source</option>
+                        <option value="local">Local Source</option>
+                        <option value="online">Online Source</option>
+                        <option value="uru">Uganda Rugby Union Media</option>
+                        <option value="usra">USRA Media</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newsImage">News Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" id="newsImage" accept="image/*" class="image-input">
+                        <div id="imagePreview" class="image-preview">
+                            <img id="previewImg" src="" alt="" style="display: none;">
+                            <span class="upload-text">Click to upload image</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save</button>
+                    <button type="button" onclick="closeNewsModal()" class="btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        /* Additional styles for enhanced form */
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        .image-upload-container {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .image-input {
+            display: none;
+        }
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .image-preview:hover {
+            border-color: #c00;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .upload-text {
+            color: #666;
+        }
+        .image-preview:hover .upload-text {
+            color: #c00;
+        }
+    </style>
+
+    <style>
+        .messages-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .message-card {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #c00;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .message-content {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .message-footer {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* News Management Styles */
+        .btn-add-news {
+            background: #c00;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 15px;
+        }
+        .btn-add-news:hover { background: #a00; }
+
+        .news-management-list {
+            max-height: 600px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* Accordion item */
+        .news-item {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #c00;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .news-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .news-item.expanded { box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+
+        /* Collapsed row — single line */
+        .news-item-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            user-select: none;
+            min-height: 44px;
+        }
+        .news-item-header:hover { background: #fafafa; }
+
+        .news-type {
+            flex-shrink: 0;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .news-type.breaking { background: #dc3545; color: white; }
+        .news-type.featured  { background: #28a745; color: white; }
+
+        .news-item-title {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .news-item-date {
+            flex-shrink: 0;
+            font-size: 0.78rem;
+            color: #888;
+        }
+
+        .news-item-chevron {
+            flex-shrink: 0;
+            font-size: 0.75rem;
+            color: #aaa;
+            transition: transform 0.25s;
+        }
+        .news-item.expanded .news-item-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Expanded body */
+        .news-item-body {
+            display: none;
+            padding: 0 14px 14px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .news-item.expanded .news-item-body { display: block; }
+
+        .news-body-meta {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            padding: 10px 0 12px;
+            font-size: 0.82rem;
+            color: #666;
+            flex-wrap: wrap;
+        }
+
+        .news-body-content-wrap {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 2.5fr;
+            gap: 16px;
+            align-items: start;
+        }
+        .news-body-content-wrap.no-image {
+            grid-template-columns: 1fr;
+        }
+        .news-image {
+            width: 100%;
+            height: 160px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .news-content {
+            font-size: 0.88rem;
+            color: #555;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+            word-break: break-word;
+        }
+
+        .news-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .btn-edit, .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: opacity 0.15s;
+        }
+        .btn-edit   { background: #e8f0fe; color: #0066cc; }
+        .btn-delete { background: #fde8e8; color: #dc3545; }
+        .btn-edit:hover   { opacity: 0.8; }
+        .btn-delete:hover { opacity: 0.8; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .modal-content {
+            background: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 600px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background: #c00;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-secondary {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Schools List Modal Styles */
+        .schools-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .schools-modal-content {
+            background: white;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 800px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .schools-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .school-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #c00;
+        }
+
+        .school-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .school-region {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .schools-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #c00;
+        }
+
+        .schools-modal-title {
+            color: #c00;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .schools-search {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+            margin-bottom: 15px;
+        }
+
+        .clickable {
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .clickable:hover {
+            transform: translateY(-5px);
+        }
+
+        .click-hint {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        /* Quill Editor Styles */
+        .ql-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .ql-editor {
+            min-height: 300px;
+            padding: 12px;
+            background-color: white;
+        }
+
+        .ql-editor.ql-blank::before {
+            color: #999;
+            font-style: italic;
+        }
+
+        .ql-toolbar {
+            border-radius: 4px 4px 0 0;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+        }
+
+        .ql-toolbar button {
+            outline: none;
+        }
+
+        .ql-toolbar button:hover,
+        .ql-toolbar button:focus {
+            color: #c00;
+        }
+
+        .ql-toolbar button.ql-active {
+            color: #c00;
+        }
+
+        #newsEditor .ql-toolbar {
+            border-radius: 4px 4px 0 0;
+        }
+
+        #newsEditor .ql-container {
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* Custom toolbar styling */
+        .ql-snow .ql-formats {
+            margin-right: 15px;
+        }
+
+        .ql-snow.ql-toolbar {
+            padding: 10px 15px;
+        }
+
+        .ql-snow .ql-pick-label,
+        .ql-snow .ql-stroke,
+        .ql-snow .ql-fill,
+        .ql-snow .ql-stroke.ql-fill {
+            fill: #333;
+            stroke: #333;
+        }
+
+        .ql-snow a.ql-button,
+        .ql-snow button.ql-active,
+        .ql-snow button:hover,
+        .ql-snow button:focus,
+        .ql-snow button.ql-active:hover,
+        .ql-snow.ql-toolbar button:hover,
+        .ql-snow.ql-toolbar button:focus,
+        .ql-snow.ql-toolbar button.ql-active,
+        .ql-snow.ql-toolbar.ql-snow button:hover,
+        .ql-snow.ql-toolbar.ql-snow button.ql-active,
+        .ql-toolbar.ql-snow button:hover,
+        .ql-toolbar.ql-snow button.ql-active {
+            color: #c00;
+        }
+
+        .ql-snow a.ql-button:hover,
+        .ql-snow button.ql-active:hover {
+            color: #a00;
+        }
+    </style>
+
+    <script>
+        // Initialize Supabase client
+        const SUPABASE_URL = 'https://vzvtymgtegqupyjezfgd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6dnR5bWd0ZWdxdXB5amV6ZmdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2MjUyNTgsImV4cCI6MjA3NTIwMTI1OH0.hhThAdMLbc3Ircx9YnEOfvPFr3LjQUjISl6zW5ZpFtE';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Check authentication and authorization
+        async function checkAccess() {
+            try {
+                // Check if user is logged in
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                if (sessionError) throw sessionError;
+                if (!session) {
+                    window.location.href = 'signin.html';
+                    return;
+                }
+
+                // Check if user has chairman access
+                const allowedEmails = ['victorbaguma34@gmail.com'];
+                if (!allowedEmails.includes(session.user.email)) {
+                    document.body.innerHTML = `
+                        <div style="text-align: center; padding: 50px; color: #c00;">
+                            <h1><i class="fas fa-exclamation-triangle"></i> Access Denied</h1>
+                            <p>You do not have permission to view this page.</p>
+                            <a href="dashboard.html" style="color: #c00; text-decoration: underline;">Return to Dashboard</a>
+                        </div>
+                    `;
+                    return false;
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Authentication error:', error);
+                window.location.href = 'signin.html';
+                return false;
+            }
+        }
+
+        // Chart color scheme
+        const chartColors = {
+            red: '#cc0000',
+            blue: '#007bff',
+            green: '#28a745',
+            yellow: '#ffc107',
+            purple: '#6f42c1',
+            orange: '#fd7e14',
+            teal: '#20c997',
+            cyan: '#17a2b8'
+        };
+
+        // Error Handler
+        const ErrorHandler = {
+            showError: function(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+                document.querySelector('.container').appendChild(errorDiv);
+                setTimeout(() => errorDiv.remove(), 5000);
+            }
+        };
+
+        async function loadStatistics() {
+            try {
+                // Fetch total schools count
+                const { count: schoolsCount, error: schoolsError } = await supabaseClient
+                    .from('schools')
+                    .select('*', { count: 'exact', head: true });
+
+                if (schoolsError) throw schoolsError;
+
+                // Fetch total players count
+                const { count: playersCount, error: playersError } = await supabaseClient
+                    .from('players')
+                    .select('*', { count: 'exact', head: true });
+
+                if (playersError) throw playersError;
+
+                // Fetch active enrollments count
+                const { count: enrollmentsCount, error: enrollmentsError } = await supabaseClient
+                    .from('tournament_enrollments')
+                    .select('*', { count: 'exact', head: true });
+
+                if (enrollmentsError) throw enrollmentsError;
+
+                // Update quick stats cards
+                updateStatsCard('totalSchools', schoolsCount);
+                updateStatsCard('totalPlayers', playersCount);
+                updateStatsCard('activeEnrollments', enrollmentsCount);
+
+                // Fetch and update charts
+                await Promise.all([
+                    loadPlayersByRegion(),
+                    loadPlayersByCategory(),
+                    loadSchoolsByRegion()
+                ]);
+
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+                ErrorHandler.showError('Failed to load statistics. Please refresh the page.');
+            }
+        }
+
+        function updateStatsCard(cardId, value) {
+            const card = document.getElementById(cardId);
+            if (card) {
+                const numberEl = card.querySelector('.stats-number');
+                const changeEl = card.querySelector('.stats-change');
+                
+                numberEl.textContent = value.toLocaleString();
+                changeEl.textContent = 'Updated just now';
+                changeEl.className = 'stats-change';
+            }
+        }
+
+        async function loadPlayersByRegion() {
+            try {
+                const { data: players, error } = await supabaseClient
+                    .from('players')
+                    .select('schools(region)');
+
+                if (error) throw error;
+
+                // Count players by region
+                const regionCounts = {};
+                players.forEach(player => {
+                    const region = player.schools?.region || 'Unknown';
+                    regionCounts[region] = (regionCounts[region] || 0) + 1;
+                });
+
+                // Create chart
+                const ctx = document.getElementById('playersByRegionChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(regionCounts),
+                        datasets: [{
+                            data: Object.values(regionCounts),
+                            backgroundColor: Object.values(chartColors)
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error loading players by region:', error);
+                ErrorHandler.showError('Failed to load regional player distribution.');
+            }
+        }
+
+        async function loadPlayersByCategory() {
+            try {
+                const { data: players, error } = await supabaseClient
+                    .from('players')
+                    .select('age_category, gender');
+
+                if (error) throw error;
+
+                // Count players by category and gender
+                const categories = {
+                    'Boys U20': 0,
+                    'Boys U17': 0,
+                    'Boys U15': 0,
+                    'Girls U20': 0,
+                    'Girls U17': 0,
+                    'Girls U15': 0
+                };
+
+                players.forEach(player => {
+                    const gender = player.gender === 'male' ? 'Boys' : 'Girls';
+                    const category = `${gender} ${player.age_category}`;
+                    if (categories.hasOwnProperty(category)) {
+                        categories[category]++;
+                    }
+                });
+
+                // Create chart
+                const ctx = document.getElementById('playersByCategoryChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(categories),
+                        datasets: [{
+                            label: 'Number of Players',
+                            data: Object.values(categories),
+                            backgroundColor: [
+                                chartColors.blue,
+                                chartColors.cyan,
+                                chartColors.teal,
+                                chartColors.red,
+                                chartColors.orange,
+                                chartColors.yellow
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error loading players by category:', error);
+                ErrorHandler.showError('Failed to load player category distribution.');
+            }
+        }
+
+        async function loadSchoolsByRegion() {
+            try {
+                const { data: schools, error } = await supabaseClient
+                    .from('schools')
+                    .select('region');
+
+                if (error) throw error;
+
+                // Count schools by region
+                const regionCounts = {};
+                schools.forEach(school => {
+                    const region = school.region || 'Unknown';
+                    regionCounts[region] = (regionCounts[region] || 0) + 1;
+                });
+
+                // Create chart
+                const ctx = document.getElementById('schoolsByRegionChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(regionCounts),
+                        datasets: [{
+                            label: 'Number of Schools',
+                            data: Object.values(regionCounts),
+                            backgroundColor: chartColors.red
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Update region list
+                const regionList = document.getElementById('regionList');
+                regionList.innerHTML = Object.entries(regionCounts)
+                    .map(([region, count]) => `
+                        <div class="region-item">
+                            <span class="region-name">${region}</span>
+                            <span class="region-count">${count}</span>
+                        </div>
+                    `)
+                    .join('');
+
+            } catch (error) {
+                console.error('Error loading schools by region:', error);
+                ErrorHandler.showError('Failed to load regional school distribution.');
+            }
+        }
+
+        async function loadMessages() {
+            try {
+                const { data: messages, error } = await supabaseClient
+                    .from('contact_messages')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const messagesContainer = document.getElementById('messagesContainer');
+                messagesContainer.innerHTML = messages.map(message => `
+                    <div class="message-card">
+                        <div class="message-header">
+                            <strong>${message.name}</strong>
+                            <span>${new Date(message.created_at).toLocaleString()}</span>
+                        </div>
+                        <div class="message-content">${message.message}</div>
+                        <div class="message-footer">
+                            <i class="fas fa-envelope"></i> ${message.email}
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                ErrorHandler.showError('Failed to load contact messages.');
+            }
+        }
+
+        // News Management Functions
+        // News Management Functions
+        async function loadNews() {
+            try {
+                const { data: news, error } = await supabaseClient
+                    .from('news')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const newsContainer = document.getElementById('newsContainer');
+                newsContainer.innerHTML = news.map(item => `
+                    <div class="news-item" data-id="${item.id}">
+                        <div class="news-item-header">
+                            <span class="news-type ${item.news_type}">${item.news_type === 'breaking' ? 'Breaking' : 'Featured'}</span>
+                            <span class="news-item-title">${escapeHtml(item.title)}</span>
+                            <span class="news-item-date">${new Date(item.created_at).toLocaleDateString()}</span>
+                            <i class="fas fa-chevron-down news-item-chevron"></i>
+                        </div>
+                        <div class="news-item-body">
+                            <div class="news-body-meta">
+                                <span><i class="fas fa-newspaper" style="color:#c00;margin-right:4px"></i>${getSourceLabel(item.source)}</span>
+                                <span><i class="far fa-clock" style="margin-right:4px"></i>${new Date(item.created_at).toLocaleString()}</span>
+                            </div>
+                            <div class="news-body-content-wrap ${item.image_url ? '' : 'no-image'}">
+                                ${item.image_url ? `
+                                    <div class="news-image">
+                                        <img src="${item.image_url}" alt="${escapeHtml(item.title)}">
+                                    </div>
+                                ` : ''}
+                                <div class="news-content">${escapeHtml(item.content)}</div>
+                            </div>
+                            <div class="news-item-actions">
+                                <button class="btn-edit" data-id="${item.id}" title="Edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn-delete" data-id="${item.id}" title="Delete">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Attach event listeners to edit and delete buttons
+                attachNewsEventListeners();
+
+            } catch (error) {
+                console.error('Error loading news:', error);
+                ErrorHandler.showError('Failed to load news items.');
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Attach event listeners to news buttons
+        function attachNewsEventListeners() {
+            // Accordion toggle — click header to expand/collapse
+            document.querySelectorAll('.news-item-header').forEach(header => {
+                header.addEventListener('click', function(e) {
+                    // Don't toggle if a button inside was clicked
+                    if (e.target.closest('.btn-edit, .btn-delete')) return;
+                    const item = this.closest('.news-item');
+                    const isExpanded = item.classList.contains('expanded');
+                    // Collapse all
+                    document.querySelectorAll('.news-item.expanded').forEach(el => el.classList.remove('expanded'));
+                    // Expand clicked one unless it was already open
+                    if (!isExpanded) item.classList.add('expanded');
+                });
+            });
+
+            // Edit buttons
+            document.querySelectorAll('.btn-edit').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    editNews(this.getAttribute('data-id'));
+                });
+            });
+
+            // Delete buttons
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteNews(this.getAttribute('data-id'));
+                });
+            });
+        }
+
+        // Helper function to get readable source labels
+        function getSourceLabel(source) {
+            const sources = {
+                'local': 'Local Source',
+                'online': 'Online Source',
+                'uru': 'Uganda Rugby Union Media',
+                'usra': 'USRA Media'
+            };
+            return sources[source] || source;
+        }
+
+        // Update edit function to handle new fields
+        async function editNews(id) {
+            try {
+                const { data: news, error } = await supabaseClient
+                    .from('news')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                document.getElementById('newsModalTitle').textContent = 'Edit News';
+                document.getElementById('newsId').value = news.id;
+                document.getElementById('newsType').value = news.news_type || '';
+                document.getElementById('newsTitle').value = news.title;
+                document.getElementById('newsSource').value = news.source || '';
+
+                // Initialize and populate Quill editor
+                initializeQuillEditor();
+                quillEditor.root.innerHTML = news.content;
+
+                if (news.image_url) {
+                    const previewImg = document.getElementById('previewImg');
+                    previewImg.src = news.image_url;
+                    previewImg.style.display = 'block';
+                    document.querySelector('.upload-text').style.display = 'none';
+                } else {
+                    const previewImg = document.getElementById('previewImg');
+                    previewImg.style.display = 'none';
+                    document.querySelector('.upload-text').style.display = 'block';
+                }
+
+                document.getElementById('newsModal').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading news item:', error);
+                ErrorHandler.showError('Failed to load news item for editing.');
+            }
+        }
+
+        // Initialize Quill Editor
+        let quillEditor;
+
+        function initializeQuillEditor() {
+            if (!quillEditor) {
+                quillEditor = new Quill('#newsEditor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'strike'],
+                            ['blockquote', 'code-block'],
+                            [{ 'header': 1 }, { 'header': 2 }],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            ['link', 'image', 'video'],
+                            ['clean']
+                        ],
+                        imageUpload: {
+                            url: 'http://localhost/upload', // Not used, we handle uploads manually
+                            method: 'POST'
+                        }
+                    },
+                    placeholder: 'Enter your news content here. You can add bold text, headings, lists, links, and images...'
+                });
+
+                // Handle image insertion
+                const imageButton = document.querySelector('.ql-toolbar .ql-image');
+                if (imageButton) {
+                    imageButton.addEventListener('click', function() {
+                        selectLocalImage();
+                    });
+                }
+            }
+        }
+
+        function selectLocalImage() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = async function() {
+                const file = input.files[0];
+                if (file) {
+                    try {
+                        // Show uploading state
+                        const range = quillEditor.getSelection();
+                        quillEditor.updateContents({
+                            [range.index]: { insert: '⏳ Uploading image...' }
+                        });
+
+                        // Upload to Supabase
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `inline-${Date.now()}.${fileExt}`;
+                        
+                        const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                            .from('news-images')
+                            .upload(fileName, file);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabaseClient.storage
+                            .from('news-images')
+                            .getPublicUrl(fileName);
+
+                        // Remove uploading text and insert image
+                        if (range) {
+                            quillEditor.deleteText(range.index, 1);
+                            quillEditor.insertEmbed(range.index, 'image', publicUrl);
+                            quillEditor.setSelection(range.index + 1);
+                        }
+                    } catch (error) {
+                        console.error('Error uploading image:', error);
+                        ErrorHandler.showError('Failed to upload image. Please try again.');
+                        // Remove uploading text
+                        const range = quillEditor.getSelection();
+                        if (range) {
+                            quillEditor.deleteText(range.index - 1, 1);
+                        }
+                    }
+                }
+            };
+        }
+
+        function openAddNewsModal() {
+            document.getElementById('newsModalTitle').textContent = 'Add News';
+            document.getElementById('newsForm').reset();
+            document.getElementById('newsId').value = '';
+            
+            // Initialize and clear editor
+            initializeQuillEditor();
+            quillEditor.setContents([]);
+            
+            const previewImg = document.getElementById('previewImg');
+            previewImg.style.display = 'none';
+            document.querySelector('.upload-text').style.display = 'block';
+            document.getElementById('newsModal').style.display = 'block';
+        }
+
+        function closeNewsModal() {
+            document.getElementById('newsModal').style.display = 'none';
+        }
+
+        async function deleteNews(id) {
+            if (!confirm('Are you sure you want to delete this news item?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('news')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                await loadNews();
+                ErrorHandler.showError('News item deleted successfully.');
+
+            } catch (error) {
+                console.error('Error deleting news:', error);
+                ErrorHandler.showError('Failed to delete news item.');
+            }
+        }
+
+        // Handle image preview
+        document.getElementById('imagePreview').addEventListener('click', function() {
+            document.getElementById('newsImage').click();
+        });
+
+        document.getElementById('newsImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewImg = document.getElementById('previewImg');
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = 'block';
+                    document.querySelector('.upload-text').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle news form submission
+        document.getElementById('newsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('newsId').value;
+            const title = document.getElementById('newsTitle').value;
+            
+            // Get content from Quill editor (as HTML)
+            const content = quillEditor ? quillEditor.root.innerHTML : '';
+            
+            const newsType = document.getElementById('newsType').value;
+            const source = document.getElementById('newsSource').value;
+            const imageFile = document.getElementById('newsImage').files[0];
+            const isEdit = !!id;
+
+            // Validation
+            if (!title.trim()) {
+                ErrorHandler.showError('Please enter a title.');
+                return;
+            }
+            if (!content.trim() || content === '<p><br></p>') {
+                ErrorHandler.showError('Please enter content.');
+                return;
+            }
+            if (!newsType) {
+                ErrorHandler.showError('Please select news type.');
+                return;
+            }
+            if (!source) {
+                ErrorHandler.showError('Please select a source.');
+                return;
+            }
+
+            try {
+                let imageUrl = '';
+                
+                // Upload image if provided
+                if (imageFile) {
+                    const fileExt = imageFile.name.split('.').pop();
+                    const fileName = `${Date.now()}.${fileExt}`;
+                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                        .from('news-images')
+                        .upload(fileName, imageFile);
+
+                    if (uploadError) throw uploadError;
+
+                    const { data: { publicUrl } } = supabaseClient.storage
+                        .from('news-images')
+                        .getPublicUrl(fileName);
+
+                    imageUrl = publicUrl;
+                }
+
+                const newsData = {
+                    title,
+                    content,
+                    news_type: newsType,
+                    source,
+                    updated_at: new Date().toISOString()
+                };
+
+                if (imageUrl) {
+                    newsData.image_url = imageUrl;
+                }
+
+                let error;
+
+                if (isEdit) {
+                    const result = await supabaseClient
+                        .from('news')
+                        .update(newsData)
+                        .eq('id', id);
+                    error = result.error;
+                } else {
+                    newsData.created_at = new Date().toISOString();
+                    const result = await supabaseClient
+                        .from('news')
+                        .insert([newsData]);
+                    error = result.error;
+                }
+
+                if (error) throw error;
+
+                closeNewsModal();
+                await loadNews();
+                ErrorHandler.showError(isEdit ? 'News updated successfully!' : 'News added successfully!');
+
+            } catch (error) {
+                console.error('Error saving news:', error);
+                ErrorHandler.showError('Failed to save news item.');
+            }
+        });
+
+        // Auto-refresh statistics, messages, and news every 5 minutes
+        // Schools List Modal Functions
+        let allSchools = []; // Store all schools for filtering
+
+        async function showSchoolsList() {
+            try {
+                // Fetch schools with explicit column names
+                const { data: schools, error } = await supabaseClient
+                    .from('schools')
+                    .select('id, school_name, region')
+                    .order('school_name');
+
+                if (error) throw error;
+
+                allSchools = schools; // Store for filtering
+                displaySchools(schools);
+                document.getElementById('schoolsModal').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading schools:', error);
+                ErrorHandler.showError('Failed to load schools list.');
+            }
+        }
+
+        function navigateToSchoolDashboard(schoolId) {
+            // Navigate directly to the school-specific dashboard with the school ID
+            window.location.href = `dashboard.html?mode=view&schoolId=${schoolId}`;
+        }
+
+        function displaySchools(schools) {
+            const schoolsList = document.getElementById('schoolsList');
+            schoolsList.innerHTML = schools.map(school => `
+                <div class="school-item" data-id="${school.id}" onclick="navigateToSchoolDashboard('${school.id}')" style="cursor: pointer;">
+                    <div class="school-name">${school.school_name || 'Unnamed School'}</div>
+                    <div class="school-region">
+                        <i class="fas fa-map-marker-alt"></i> ${school.region || 'Unknown Region'}
+                    </div>
+                    <div class="school-view-hint" style="color: #666; font-size: 0.8em; margin-top: 5px;">
+                        <i class="fas fa-external-link-alt"></i> Click to view school dashboard
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function closeSchoolsModal() {
+            document.getElementById('schoolsModal').style.display = 'none';
+        }
+
+        // Initialize schools search functionality
+        document.getElementById('schoolsSearch')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredSchools = allSchools.filter(school => {
+                const schoolName = (school.school_name || '').toLowerCase();
+                const region = (school.region || '').toLowerCase();
+                return schoolName.includes(searchTerm) || region.includes(searchTerm);
+            });
+            displaySchools(filteredSchools);
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('schoolsModal');
+            if (e.target === modal) {
+                closeSchoolsModal();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const hasAccess = await checkAccess();
+            if (hasAccess) {
+                loadStatistics();
+                loadMessages();
+                loadNews();
+                initPlayerSearch();
+                setInterval(() => {
+                    loadStatistics();
+                    loadMessages();
+                    loadNews();
+                }, 300000); // 5 minutes
+            }
+        });
+
+        // Player Search Functionality
+        function initPlayerSearch() {
+            const searchInput = document.getElementById('playerSearch');
+            const searchButton = document.getElementById('searchButton');
+            const searchResults = document.getElementById('searchResults');
+            let debounceTimeout;
+
+            // Function to perform search
+            const performSearch = () => {
+                const searchTerm = searchInput.value.trim();
+                if (searchTerm.length >= 2) {
+                    searchPlayers(searchTerm);
+                } else if (searchTerm.length === 0) {
+                    searchResults.style.display = 'none';
+                } else {
+                    ErrorHandler.showError('Please enter at least 2 characters to search');
+                }
+            };
+
+            // Search on input with debounce
+            searchInput.addEventListener('input', function(e) {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(performSearch, 300);
+            });
+
+            // Search on button click
+            searchButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                performSearch();
+            });
+
+            // Search on Enter key press
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performSearch();
+                }
+            });
+
+            // Close search results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
+        }
+
+        async function searchPlayers(searchTerm) {
+            try {
+                const { data: players, error } = await supabaseClient
+                    .from('players')
+                    .select('*, schools!player_school_id(school_name, region)')
+                    .ilike('full_name', `%${searchTerm}%`)
+                    .limit(10);
+
+                if (error) throw error;
+
+                const searchResults = document.getElementById('searchResults');
+                
+                if (players.length === 0) {
+                    searchResults.innerHTML = `
+                        <div class="search-result-item">
+                            <div class="search-result-name">No players found</div>
+                        </div>
+                    `;
+                } else {
+                    searchResults.innerHTML = players.map(player => `
+                        <div class="search-result-item">
+                            <div class="search-result-name">${player.full_name}</div>
+                            <div class="search-result-school">
+                                <i class="fas fa-school"></i> ${(player.schools && player.schools.school_name) || 'Unknown School'}
+                                <span style="margin-left: 10px;">
+                                    <i class="fas fa-map-marker-alt"></i> ${player.schools?.region || 'Unknown Region'}
+                                </span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                searchResults.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error searching players:', error);
+                ErrorHandler.showError('Failed to search players.');
+            }
+        }
+    </script>
+    
+    <!-- Vercel Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

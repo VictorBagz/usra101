@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Registration - USRA</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="apple-touch-icon" href="photos/logos/usraLogo.png">
+    <link rel="shortcut icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="stylesheet" href="registrationTest.css">
+    <link rel="stylesheet" href="error-modal.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- ======== REUSED NAVIGATION BAR ======== -->
+    <header id="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="photos/logos/usraLogo.png" alt="USRA Logo" style="height: 40px; width: auto;">
+            </a>
+            <nav class="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About Us</a></li>
+                    <li><a href="index.html#events">Events</a></li>
+                    <li><a href="index.html#gallery">Gallery</a></li>
+                    <li><a href="signin.html">Sign In</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">More <i class="fas fa-chevron-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="leadership.html">Leadership</a></li>
+                            <li><a href="index.html#workplan">Workplan</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <a href="registration.html" class="btn btn-secondary">Register Now</a>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- ======== REGISTRATION HERO SECTION ======== -->
+        <section class="reg-hero">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <h1>School Registration</h1>
+                <p>Join the Uganda Schools Rugby Association and become part of our growing community.</p>
+            </div>
+        </section>
+        
+        <!-- ======== MAIN REGISTRATION SECTION ======== -->
+        <section id="contact-form-section" class="registration-main">
+            <div class="container">
+                <div class="form-wrapper">
+                    <div class="progress-bar">
+                        <div class="progress-step active" data-step="1"><div class="step-circle">1</div><span>School Info</span></div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step" data-step="2"><div class="step-circle">2</div><span>Representative</span></div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step" data-step="3"><div class="step-circle">3</div><span>Submit</span></div>
+                    </div>
+
+                    <form id="schoolRegistrationForm">
+                        <!-- Step 1: School Information -->
+                        <div class="form-step active" data-step="1">
+    <h3 class="step-title"><i class="fas fa-school"></i> School Information</h3>
+    <div class="form-grid">
+        <div class="form-group full-width"><label for="schoolName">School Name*</label><input type="text" id="schoolName" required></div>
+        <div class="form-group"><label for="centerNumber">Centre Number*</label><input type="text" id="centerNumber" required></div>
+        <div class="form-group"><label for="schoolEmail">School Email*</label><input type="email" id="schoolEmail" required></div>
+        <div class="form-group"><label for="region">Region*</label><select id="region" required><option value="">Select Region</option><option>Central</option><option>Eastern</option><option>Northern</option><option>Western</option></select></div>
+        <div class="form-group">
+            <label for="district">District*</label>
+            <select id="district" required>
+                <option value="">Select District</option>
+                <!-- Districts will be populated by JavaScript -->
+            </select>
+        </div>
+        
+        <div class="form-group full-width">
+            <label for="schoolBadge">School Badge</label>
+            <div class="file-upload">
+                <input type="file" id="schoolBadge" class="file-input" accept="image/*" data-preview="badge-preview">
+                <label for="schoolBadge" class="file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span class="file-label-text">Choose image...</span>
+                </label>
+            </div>
+            <img id="badge-preview" class="image-preview" alt="School Badge Preview">
+        </div>
+    </div>
+    <div class="step-navigation"><button type="button" class="btn btn-primary next-step">Next <i class="fas fa-arrow-right"></i></button></div>
+</div>
+
+<div class="form-step" data-step="2">
+    <h3 class="step-title"><i class="fas fa-user-tie"></i> Representative Information</h3>
+    <div class="form-grid">
+        <div class="form-group"><label for="adminFullName">Full Name*</label><input type="text" id="adminFullName" required></div>
+        <div class="form-group"><label for="nin">NIN*</label><input type="text" id="nin" required></div>
+        <div class="form-group">
+            <label for="role">Role/Position*</label>
+            <select id="role" required>
+                <option value="">Select Role</option>
+                <option value="Head Teacher">Head Teacher</option>
+                <option value="Deputy Head Teacher">Deputy Head Teacher</option>
+                <option value="Games Teacher">Games Teacher</option>
+            </select>
+        </div>
+        <div class="form-group"><label for="repEmail">Email*</label><input type="email" id="repEmail" required></div>
+        <div class="form-group"><label for="contact1">Primary Contact*</label><input type="tel" id="contact1" required></div>
+        <div class="form-group">
+            <label for="qualifications">Highest Qualification*</label>
+            <select id="qualifications" required>
+                <option value="">Select Qualification</option>
+                <option value="PHD">PHD</option>
+                <option value="Masters">Masters</option>
+                <option value="Bachelors">Bachelors</option>
+                <option value="Diploma">Diploma</option>
+                <option value="Certificate">Certificate</option>
+            </select>
+        </div>
+        <div class="form-group"><label for="adminPassword">Create Password*</label><div class="password-wrapper"><input type="password" id="adminPassword" required minlength="8"><i class="fas fa-eye password-toggle"></i></div><div class="password-strength"><div class="strength-bar"></div><span class="strength-text"></span></div></div>
+        <div class="form-group"><label for="confirmPassword">Confirm Password*</label><div class="password-wrapper"><input type="password" id="confirmPassword" required><i class="fas fa-eye password-toggle"></i></div><span id="password-match-error" class="error-message"></span></div>
+        
+        <div class="form-group">
+            <label for="profilePhoto">Profile Photo</label>
+            <div class="file-upload">
+                <input type="file" id="profilePhoto" class="file-input" accept="image/*" data-preview="photo-preview">
+                <label for="profilePhoto" class="file-label">
+                    <i class="fas fa-camera"></i>
+                    <span class="file-label-text">Choose photo...</span>
+                </label>
+            </div>
+            <img id="photo-preview" class="image-preview" alt="Profile Photo Preview">
+        </div>
+        
+        <div class="form-group">
+            <label for="documents">Supporting Documents</label>
+            <div class="file-upload">
+                <input type="file" id="documents" class="file-input" accept=".pdf,.doc,.docx">
+                <label for="documents" class="file-label">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="file-label-text">Upload file...</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="step-navigation"><button type="button" class="btn btn-outline prev-step"><i class="fas fa-arrow-left"></i> Previous</button><button type="button" class="btn btn-primary next-step">Next <i class="fas fa-arrow-right"></i></button></div>
+</div>
+                        <!-- Step 3: Review & Submit -->
+                        <div class="form-step" data-step="3">
+                             <h3 class="step-title"><i class="fas fa-check-circle"></i> Review & Submit</h3>
+                             <div class="summary-section">
+                                <h4>School Information</h4>
+                                <p><strong>School Name:</strong> <span data-summary="schoolName"></span></p><p><strong>School Email:</strong> <span data-summary="schoolEmail"></span></p><p><strong>Region:</strong> <span data-summary="region"></span></p><p><strong>School Badge:</strong> <span data-summary="schoolBadge"></span></p>
+                                <h4>Representative</h4>
+                                <p><strong>Full Name:</strong> <span data-summary="adminFullName"></span></p><p><strong>NIN:</strong> <span data-summary="nin"></span></p><p><strong>Email:</strong> <span data-summary="repEmail"></span></p><p><strong>Contact:</strong> <span data-summary="contact1"></span></p><p><strong>Profile Photo:</strong> <span data-summary="profilePhoto"></span></p><p><strong>Documents:</strong> <span data-summary="documents"></span></p>
+                             </div>
+                             <div class="form-group">
+                                <label class="terms"><input type="checkbox" id="termsAccept" required> I confirm all information is accurate and agree to the <a href="#">terms and conditions</a>.</label>
+                             </div>
+                             <div class="step-navigation">
+                                <button type="button" class="btn btn-outline prev-step"><i class="fas fa-arrow-left"></i> Previous</button>
+                                <!-- SUBMIT BUTTON NOW DISABLED BY DEFAULT -->
+                                <button type="submit" id="submitBtn" class="btn btn-primary" disabled>Submit Registration</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- External Libraries -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- App Scripts -->
+    <script type="text/javascript" src="createClient.js"></script>
+    <script type="text/javascript" src="errorHandler.js"></script>
+    <script type="text/javascript" src="districts.js"></script>
+    <script type="text/javascript" src="registration.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+    
+    <!-- End of body -->
+</body>
+</html>

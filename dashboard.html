@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - USRA</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="apple-touch-icon" href="photos/logos/usraLogo.png">
+    <link rel="shortcut icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="stylesheet" href="dashboardTest.css">
+    <link rel="stylesheet" href="tournamentOverlay.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+    <header id="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html" class="logo">
+                    <img src="photos/logos/usraLogo.png" alt="USRA Logo" class="nav-logo">
+                </a>
+            </div>
+            <nav class="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="index.html#about" class="nav-link">About Us</a></li>
+                    <li><a href="signin.html" class="nav-link">Sign In</a></li>
+                </ul>
+            </nav>
+            <div class="nav-actions">
+                <a href="registration.html" class="btn btn-secondary">Register</a>
+            </div>
+            <button class="hamburger">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-profile">
+                <!-- Added a placeholder with a loading state -->
+                <img src="https://placehold.co/100x100/EFEFEF/333333?text=..." alt="Profile Photo" id="sidebar-profile-photo">
+                <h3 id="sidebar-user-name">Loading...</h3>
+                <p id="sidebar-school-name">Loading...</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" class="active"><i class="fas fa-user-circle"></i> My Profile</a></li>
+                    <li><a href="#"><i class="fas fa-calendar-alt"></i> My Events <span class="soon-badge">Soon</span></a></li>
+                    <li><a href="#" id="enrollBtn" title="Enroll in Tournaments"><i class="fas fa-trophy"></i> Enroll</a></li>
+                    <li><a href="#" id="chairmansDashboard" title="Chairman's Dashboard" style="display: none;"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                    <li><a href="#" title="Settings"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <section class="dashboard-content">
+            <div class="dashboard-header">
+                <div class="welcome-section">
+                    <div class="welcome-content">
+                        <!-- Updated welcome message to show school name -->
+                        <h1>Welcome, <span data-field="schoolName">Loading...</span>!</h1>
+                        <p>Here are your school's registration details.</p>
+                        <!-- Error badge container -->
+                        <div class="status-badges">
+                            <div id="dashboard-error" class="status-badge error" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i> Could not load data.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- School badge as background will be set via CSS using data-field -->
+                    <div class="welcome-badge" data-field="schoolBadge" data-type="background"></div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="player-registration.html" class="btn btn-primary"><i class="fas fa-user-plus"></i> Register Player</a>
+                <a href="#" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Profile</a>
+                <a href="#" class="btn btn-outline"><i class="fas fa-print"></i> Print Details</a>
+            </div>
+
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-school"></i> School Information</h2>
+                     <!-- Added a placeholder with a loading state -->
+                    <img src="https://placehold.co/150x150/EFEFEF/333333?text=..." alt="School Badge" class="school-badge" data-field="schoolBadge" data-type="image">
+                </div>
+                <div class="details-grid">
+                    <div class="detail-item"><span class="label">School Name</span><span class="value" data-field="schoolName">...</span></div>
+                    <div class="detail-item"><span class="label">Centre Number</span><span class="value" data-field="centerNumber">...</span></div>
+                    <div class="detail-item"><span class="label">School Email</span><span class="value" data-field="schoolEmail">...</span></div>
+                    <div class="detail-item"><span class="label">Region</span><span class="value" data-field="region">...</span></div>
+                    <div class="detail-item"><span class="label">District</span><span class="value" data-field="district">...</span></div>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-user-tie"></i> Representative Information</h2>
+                </div>
+                 <div class="details-grid">
+                    <div class="detail-item"><span class="label">Full Name</span><span class="value" data-field="adminFullName">...</span></div>
+                    <div class="detail-item"><span class="label">NIN</span><span class="value" data-field="nin">...</span></div>
+                    <div class="detail-item"><span class="label">Email</span><span class="value" data-field="repEmail">...</span></div>
+                    <div class="detail-item"><span class="label">Role/Position</span><span class="value" data-field="role">...</span></div>
+                    <div class="detail-item"><span class="label">Primary Contact</span><span class="value" data-field="contact1">...</span></div>
+                    <div class="detail-item"><span class="label">Highest Qualification</span><span class="value" data-field="qualifications">...</span></div>
+                    <div class="detail-item"><span class="label">Supporting Documents</span><a href="#" class="value doc-link" data-field="documents" data-type="link">View Document</a></div>
+                </div>
+            </div>
+
+            <!-- Player Management Section -->
+            <div class="profile-card player-management">
+    <div class="card-header">
+        <h2><i class="fas fa-users"></i> Player Management</h2>
+        <div class="header-actions">
+            <select id="playerFilter" class="form-select">
+                <option value="all">All Players</option>
+                <option value="boys">Boys Teams</option>
+                <option value="girls">Girls Teams</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="team-section" id="boysTeams">
+        <h3><i class="fas fa-male"></i> Boys Teams</h3>
+        <div class="age-groups">
+            <div class="age-group">
+                <div class="age-group-header">
+                    <h4>Under 20</h4>
+                    <button class="download-btn" onclick="downloadCategoryPDF('boys-u20', 'Boys Under 20')" title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <ul class="players-list" id="boys-u20"><li class="loading">Loading players...</li></ul>
+                <a class="show-more-link">View All</a>
+            </div>
+            <div class="age-group">
+                <div class="age-group-header">
+                    <h4>Under 17</h4>
+                    <button class="download-btn" onclick="downloadCategoryPDF('boys-u17', 'Boys Under 17')" title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <ul class="players-list" id="boys-u17"><li class="loading">Loading players...</li></ul>
+                <a class="show-more-link">View All</a>
+            </div>
+            <div class="age-group">
+                <div class="age-group-header">
+                    <h4>Under 15</h4>
+                    <button class="download-btn" onclick="downloadCategoryPDF('boys-u15', 'Boys Under 15')" title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <ul class="players-list" id="boys-u15"><li class="loading">Loading players...</li></ul>
+                <a class="show-more-link">View All</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="team-section" id="girlsTeams">
+        <h3><i class="fas fa-female"></i> Girls Teams</h3>
+        <div class="age-groups">
+            <div class="age-group">
+                <div class="age-group-header">
+                    <h4>Under 20</h4>
+                    <button class="download-btn" onclick="downloadCategoryPDF('girls-u20', 'Girls Under 20')" title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <ul class="players-list" id="girls-u20"><li class="loading">Loading players...</li></ul>
+                <a class="show-more-link">View All</a>
+            </div>
+            <div class="age-group">
+                <div class="age-group-header">
+                    <h4>Under 17</h4>
+                    <button class="download-btn" onclick="downloadCategoryPDF('girls-u17', 'Girls Under 17')" title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <ul class="players-list" id="girls-u17"><li class="loading">Loading players...</li></ul>
+                <a class="show-more-link">View All</a>
+            </div>
+            <div class="age-group">
+                <div class="age-group-header">
+                    <h4>Under 15</h4>
+                    <button class="download-btn" onclick="downloadCategoryPDF('girls-u15', 'Girls Under 15')" title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                <ul class="players-list" id="girls-u15"><li class="loading">Loading players...</li></ul>
+                <a class="show-more-link">View All</a>
+            </div>
+        </div>
+    </div>
+</div>
+        </section>
+    </main>
+
+    <!-- Settings Overlay -->
+    <div id="settingsOverlay" class="settings-overlay">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <button class="settings-close">&times;</button>
+            </div>
+            <div class="settings-body">
+                <div class="settings-section">
+                    <h3><i class="fas fa-headset"></i> Contact Support</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="contact-details">
+                                <h4>Email</h4>
+                                <p>usrasecretariat@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div class="contact-details">
+                                <h4>Phone</h4>
+                                <p>+256 783 562 222</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="contact-details">
+                                <h4>Address</h4>
+                                <p>Tennis Courts, Lugogo Bypass, Kampala, Uganda</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div class="contact-details">
+                                <h4>Operating Hours</h4>
+                                <p>Monday - Friday: 8:00 AM - 5:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Details Modal -->
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> Player Details</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="player-profile">
+                    <div class="player-header">
+                        <img src="" alt="" class="modal-player-photo">
+                        <div class="player-title">
+                            <h3 class="modal-player-name">Player Name</h3>
+                            <span class="modal-player-category">Age Category</span>
+                        </div>
+                    </div>
+
+                    <div class="details-section">
+                        <h4><i class="fas fa-info-circle"></i> Personal Information</h4>
+                        <div class="details-grid">
+                            <div class="detail-item" style="grid-column: 1/-1;"><span class="label">Player ID</span><span class="value" id="modal-playerId" style="color: #2563eb; font-weight: 600;"></span></div>
+                            <div class="detail-item"><span class="label">First Name</span><span class="value" id="modal-firstName"></span></div>
+                            <div class="detail-item"><span class="label">Middle Name</span><span class="value" id="modal-middleName"></span></div>
+                            <div class="detail-item"><span class="label">Last Name</span><span class="value" id="modal-lastName"></span></div>
+                            <div class="detail-item"><span class="label">Date of Birth</span><span class="value" id="modal-dob"></span></div>
+                            <div class="detail-item"><span class="label">Age</span><span class="value" id="modal-age"></span></div>
+                            <div class="detail-item"><span class="label">Class</span><span class="value" id="modal-class"></span></div>
+                            <div class="detail-item"><span class="label">Position</span><span class="value" id="modal-position"></span></div>
+                        </div>
+                    </div>
+
+                    <div class="details-section">
+                        <h4><i class="fas fa-graduation-cap"></i> Academic Information</h4>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="label">LIN Number</span><span class="value" id="modal-lin"></span></div>
+                            <div class="detail-item"><span class="label">PLE Index Number</span><span class="value" id="modal-pleIndex"></span></div>
+                            <div class="detail-item"><span class="label">PLE Year</span><span class="value" id="modal-pleYear"></span></div>
+                            <div class="detail-item"><span class="label">PLE Certificate</span><a href="#" class="value doc-link" id="modal-pleCert">View Document</a></div>
+                        </div>
+                    </div>
+
+                    <div class="details-section">
+                        <h4><i class="fas fa-users"></i> Guardian Information</h4>
+                        <div class="details-grid">
+                            <div class="detail-item"><span class="label">Full Name</span><span class="value" id="modal-guardianName"></span></div>
+                            <div class="detail-item"><span class="label">Relationship</span><span class="value" id="modal-relationship"></span></div>
+                            <div class="detail-item"><span class="label">Contact</span><span class="value" id="modal-guardianContact"></span></div>
+                            <div class="detail-item"><span class="label">NIN</span><span class="value" id="modal-guardianNin"></span></div>
+                            <div class="detail-item"><span class="label">Residence</span><span class="value" id="modal-guardianResidence"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <!-- Tournament Enrollment Overlay -->
+    <div id="tournamentOverlay" class="tournament-overlay">
+        <div class="tournament-content">
+            <div class="tournament-header">
+                <h2><i class="fas fa-trophy"></i> Available Tournaments</h2>
+                <button class="tournament-close">&times;</button>
+            </div>
+            <div class="tournament-body">
+                <div id="overlayTournamentsGrid" class="tournaments-grid">
+                    <div class="tournament-categories">
+                        <!-- Central Leagues -->
+                        <div class="tournament-category">
+                            <h3><i class="fas fa-star"></i> Central Schools Leagues</h3>
+                            <div class="tournament-items"></div>
+                        </div>
+
+                        <!-- Zonal Leagues -->
+                        <div class="tournament-category">
+                            <h3><i class="fas fa-map-marker-alt"></i> Zonal Schools Leagues</h3>
+                            <div class="dropdown-wrapper">
+                                <label class="dropdown-label">Select Zone</label>
+                                <select class="zone-selector">
+                                    <option value="">Choose a zone...</option>
+                                    <option value="west-acholi">West Acholi Zone</option>
+                                    <option value="east-acholi">East Acholi Zone</option>
+                                    <option value="masaka">Masaka Zone</option>
+                                    <option value="kigezi">Kigezi Zone</option>
+                                    <option value="teso">Teso Zone</option>
+                                    <option value="rwenzori">Rwenzori Zone</option>
+                                    <option value="bugisu">Bugisu Zone</option>
+                                    <option value="busoga">Busoga Zone</option>
+                                    <option value="ankole">Ankole Zone</option>
+                                    <option value="bukedi">Bukedi Zone</option>
+                                    <option value="lango">Lango Zone</option>
+                                </select>
+                            </div>
+                            <div class="tournament-items zone-tournaments"></div>
+                        </div>
+
+                        <!-- Regional Leagues -->
+                        <div class="tournament-category">
+                            <h3><i class="fas fa-globe-africa"></i> Regional Leagues</h3>
+                            <div class="dropdown-wrapper">
+                                <label class="dropdown-label">Select Region</label>
+                                <select class="region-selector">
+                                    <option value="">Choose a region...</option>
+                                    <option value="western">Western League</option>
+                                    <option value="central">Central League</option>
+                                    <option value="northern">Northern League</option>
+                                    <option value="eastern">Eastern League</option>
+                                </select>
+                            </div>
+                            <div class="tournament-items region-tournaments"></div>
+                        </div>
+
+                        <!-- Independence Cup -->
+                        <div class="tournament-category">
+                            <h3><i class="fas fa-trophy"></i> Independence Cup</h3>
+                            <div class="tournament-items"></div>
+                        </div>
+
+                        <!-- International Tournaments -->
+                        <div class="tournament-category">
+                            <h3><i class="fas fa-plane"></i> International Tournaments</h3>
+                            <div class="dropdown-wrapper">
+                                <label class="dropdown-label">Select International Tournament</label>
+                                <select class="international-selector">
+                                    <option value="">Choose a tournament...</option>
+                                    <option value="abudhabi">World Schools Festival Abu-Dhabi</option>
+                                </select>
+                            </div>
+                            <div class="tournament-items international-tournaments"></div>
+                        </div>
+                    </div>
+                    <div class="loading-placeholder" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Loading tournaments...
+                    </div>
+                </div>
+                <div id="playerSelectionSection" style="display: none;">
+                    <div class="selection-header">
+                        <h3><i class="fas fa-users"></i> Select Players to Enroll</h3>
+                        <p class="tournament-name"></p>
+                    </div>
+                    <div class="age-category-selector">
+                        <label for="categoryFilter">Category:</label>
+                        <select id="categoryFilter">
+                            <option value="all">All Categories</option>
+                            <option value="boys-u20">Boys U20</option>
+                            <option value="boys-u17">Boys U17</option>
+                            <option value="boys-u15">Boys U15</option>
+                            <option value="girls-u20">Girls U20</option>
+                            <option value="girls-u17">Girls U17</option>
+                            <option value="girls-u15">Girls U15</option>
+                        </select>
+                    </div>
+                    <div class="player-selection-list">
+                        <!-- Players will be dynamically populated here -->
+                    </div>
+                    <div class="selected-players-summary">
+                        <h4>Selected Players: <span id="selectedCount">0</span></h4>
+                    </div>
+                    <div class="enrollment-actions">
+                        <button id="backToTournaments" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Tournaments</button>
+                        <button id="confirmEnrollment" class="btn btn-primary"><i class="fas fa-check"></i> Confirm Enrollment</button>
+                    </div>
+                    
+                    <!-- Enrolled Players Section -->
+                    <div id="enrolledPlayersSection" style="display: none;" class="enrolled-players-section">
+                        <div class="enrolled-header">
+                            <h3><i class="fas fa-check-circle"></i> Enrolled Players</h3>
+                            <button id="downloadEnrolledList" class="btn btn-secondary">
+                                <i class="fas fa-file-pdf"></i> Download PDF
+                            </button>
+                        </div>
+                        <div class="enrolled-players-list">
+                            <!-- Enrolled players will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Handling -->
+    <link rel="stylesheet" href="error-modal.css">
+    <script src="errorHandler.js"></script>
+    
+    <!-- External libraries -->
+    <script>
+        window.ErrorHandler = ErrorHandler; // Export ErrorHandler globally
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        window.jspdf = window.jspdf || {};
+    </script>
+    <!-- Load dependencies first -->
+    <script src="createClient.js"></script>
+    <script src="errorHandler.js"></script>
+    
+    <!-- Load application scripts in proper order -->
+    <script src="tournaments.js"></script>
+    <script src="enrollmentUI.js"></script>
+    <script src="dashboard.js"></script>
+
+    <script>
+        // Debug logging
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Document loaded');
+            const enrollBtn = document.getElementById('enrollBtn');
+            console.log('Enroll button found:', !!enrollBtn);
+            
+            if (enrollBtn) {
+                console.log('Adding click listener to enroll button');
+                enrollBtn.addEventListener('click', function(e) {
+                    console.log('Enroll button clicked');
+                });
+            }
+
+            // Handle chairman's dashboard navigation
+            const chairmansDashboard = document.getElementById('chairmansDashboard');
+            if (chairmansDashboard) {
+                chairmansDashboard.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'chairmans-stats.html';
+                });
+            }
+
+            // Initialize tooltips if using Bootstrap
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function(tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

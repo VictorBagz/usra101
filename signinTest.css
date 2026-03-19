@@ -1,0 +1,457 @@
+/* CSS Variables for Theme */
+:root {
+    --primary-red: #B91C1C;
+    --dark-red: #991B1B;
+    --light-red: #FEE2E2;
+    --text-dark: #1F2937;
+    --text-light: #F9FAFB;
+    --gray-light: #F3F4F6;
+    --gray-medium: #D1D5DB;
+    --gray-dark: #4B5563;
+    --white: #FFFFFF;
+    --transition: all 0.3s ease;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: #f8f9fa;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+}
+
+ul {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--primary-red);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--dark-red);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-red);
+    color: var(--primary-red);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary-red);
+    color: var(--white);
+}
+
+.btn-secondary {
+    background-color: var(--primary-red);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    background-color: var(--dark-red);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Header Styles */
+#navbar {
+    background-color: var(--white);
+    box-shadow: var(--shadow);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    transition: var(--transition);
+}
+
+#navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary-red);
+}
+
+.nav-menu ul {
+    display: flex;
+}
+
+.nav-links li {
+    margin-left: 30px;
+    position: relative;
+}
+
+.nav-links a {
+    font-weight: 600;
+    color: var(--text-dark);
+    position: relative;
+}
+
+.nav-links a:hover {
+    color: var(--primary-red);
+}
+
+.nav-links a::after {
+    display: none;
+}
+
+.nav-links a:hover::after {
+    display: none;
+}
+
+/* Dropdown Styles */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-toggle i {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--white);
+    min-width: 180px;
+    box-shadow: var(--shadow-hover);
+    border-radius: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: var(--transition);
+    z-index: 100;
+}
+
+.dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu li {
+    margin: 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 15px;
+    color: #FFD700;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    background-color: var(--light-red);
+    color: #FFD700;
+}
+
+.hamburger {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-dark);
+}
+
+/* Sign In Section */
+.signin-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 50px;
+    background: linear-gradient(135deg, #ff4444, #cc0000);
+}
+
+.signin-card {
+    width: 100%;
+    max-width: 450px;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-hover);
+    padding: 40px 30px;
+    animation: slideInUp 0.8s ease forwards;
+}
+
+.signin-card h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.signin-card p {
+    color: var(--gray-dark);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.error-message {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.error-message i {
+    font-size: 1.1rem;
+}
+
+/* Form Styles */
+#signInForm {
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--gray-medium);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.2);
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--gray-medium);
+    transition: var(--transition);
+}
+
+.password-toggle:hover {
+    color: var(--primary-red);
+}
+
+.form-options {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 25px;
+}
+
+.forgot-password {
+    color: var(--primary-red);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.forgot-password:hover {
+    color: var(--dark-red);
+    text-decoration: underline;
+}
+
+.btn-primary {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.redirect-link {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-light);
+}
+
+.redirect-link p {
+    color: var(--gray-dark);
+    font-size: 0.95rem;
+}
+
+.redirect-link a {
+    color: var(--primary-red);
+    font-weight: 600;
+}
+
+.redirect-link a:hover {
+    text-decoration: underline;
+}
+
+/* Footer */
+.site-footer {
+    background-color: var(--text-dark);
+    color: var(--white);
+    padding: 20px 0;
+    text-align: center;
+}
+
+.footer-bottom {
+    padding: 10px 0;
+    font-size: 0.9rem;
+    color: var(--gray-light);
+}
+
+/* Animations */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: 70px;
+        flex-direction: column;
+        background-color: var(--white);
+        width: 100%;
+        text-align: center;
+        transition: var(--transition);
+        box-shadow: var(--shadow-hover);
+        padding: 20px 0;
+    }
+    
+    .nav-menu.active {
+        left: 0;
+    }
+    
+    .nav-links {
+        flex-direction: column;
+    }
+    
+    .nav-links li {
+        margin: 10px 0;
+    }
+    
+    .dropdown-menu {
+        position: static;
+        box-shadow: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        background-color: var(--gray-light);
+        border-radius: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .dropdown:hover .dropdown-menu {
+        max-height: 200px;
+    }
+    
+    .btn-secondary {
+        display: none;
+    }
+    
+    .signin-card {
+        padding: 30px 20px;
+    }
+    
+    .signin-card h2 {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .signin-section {
+        padding: 80px 15px 40px;
+    }
+    
+    .signin-card {
+        padding: 25px 15px;
+    }
+    
+    .signin-card h2 {
+        font-size: 1.5rem;
+    }
+}

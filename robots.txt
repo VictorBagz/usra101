@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /config.js
+Disallow: /photos/docs/
+
+# Sitemap
+Sitemap: https://ugandaschoolsrugby.com//sitemap.xml

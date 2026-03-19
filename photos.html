@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Albums</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="photos/logos/usraLogo.png">
+    <link rel="apple-touch-icon" href="photos/logos/usraLogo.png">
+    <link rel="shortcut icon" type="image/png" href="photos/logos/usraLogo.png">
+    <style>
+        /* Red theme variables */
+        :root {
+            --primary-red: #c8102e;
+            --dark-red: #a00;
+            --light-red: #ffcccc;
+            --background: #f8f8f8;
+            --text-color: #333;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        header {
+            background-color: var(--primary-red);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        /* Header background animation */
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .album-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        .album-card.hidden {
+            display: none;
+        }
+
+        .album-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .album-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 5px solid var(--primary-red);
+        }
+
+        .album-card .content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .album-card h2 {
+            font-size: 1.5em;
+            margin: 0 0 10px;
+            color: var(--primary-red);
+        }
+
+        .album-card p {
+            margin: 0 0 15px;
+            color: #666;
+        }
+
+        .album-card a {
+            display: inline-block;
+            background-color: var(--primary-red);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .album-card a:hover {
+            background-color: var(--dark-red);
+        }
+
+        #view-more {
+            display: block;
+            margin: 40px auto 0;
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+        }
+
+        #view-more:hover {
+            background-color: var(--dark-red);
+            transform: scale(1.05);
+        }
+
+        /* Scroll animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Staggered animation for cards */
+        .album-card:nth-child(1) { animation-delay: 0.1s; }
+        .album-card:nth-child(2) { animation-delay: 0.2s; }
+        .album-card:nth-child(3) { animation-delay: 0.3s; }
+        .album-card:nth-child(4) { animation-delay: 0.4s; }
+        .album-card:nth-child(5) { animation-delay: 0.5s; }
+        .album-card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Navigation menu for smooth scrolling */
+        .main-nav {
+            background-color: var(--light-red);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--dark-red);
+        }
+
+        .back-home {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .back-home i {
+            transition: transform 0.3s ease;
+        }
+
+        .back-home:hover {
+            color: var(--dark-red);
+        }
+
+        .back-home:hover i {
+            transform: translateX(-5px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Photo Albums Gallery</h1>
+    </header>
+
+    <nav class="main-nav">
+        <a href="index.html" class="back-home">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        <div class="nav-links">
+            <a href="#albums">Albums</a>
+            <a href="#footer">About</a>
+        </div>
+    </nav>
+
+    <div class="container" id="albums">
+        <div class="album-grid">
+            <!-- Initial visible cards (first 3) -->
+             <div class="album-card hidden" id="card6">
+                <img src="photos/leaders/chairman.jpg" alt="Album 6">
+                <div class="content">
+                    <h2>USRA AGM 2025</h2>
+                    <a href="https://drive.google.com/drive/folders/1qB5pe1kN4DCgij-EcMY-zfwu1MvMmjuD" target="_blank">View Album</a>
+                </div>
+            </div>
+            <div class="album-card" id="card1">
+                <img src="photos/players/buddo.jpg" alt="Album 1">
+                <div class="content">
+                    <h2>Schools League Finals 2025</h2>
+                    <a href="https://drive.google.com/drive/folders/14dXQZ-8ItZ1XY8RAvFWnEhmKZTZvdb9V" target="_blank">View Album</a>
+                </div>
+            </div>
+            <div class="album-card" id="card2">
+                <img src="photos/players/smack.JPG" alt="Album 2">
+                <div class="content">
+                    <h2>2nd Leg Semi-Finals</h2>
+                    <a href="https://drive.google.com/drive/folders/1-mJKC3wcCCNFucFP1Xu7WV8urjIkgLvd" target="_blank">View Album</a>
+                </div>
+            </div>
+            <div class="album-card" id="card3">
+                <img src="photos/players/div2.JPG" alt="Album 3">
+                <div class="content">
+                    <h2>Div II Finals 2025</h2>
+                    <a href="https://drive.google.com/drive/folders/1-ncPUCNxE-ZPBz8Z9ZzzCNuToQxJfQMJ" target="_blank">View Album</a>
+                </div>
+            </div>
+            <!-- Hidden cards (remaining 3) -->
+            <div class="album-card hidden" id="card4">
+                <img src="photos/players/north.JPG" alt="Album 4">
+                <div class="content">
+                    <h2>Northern Schools Finals 2025</h2>
+                    <a href="https://drive.google.com/drive/folders/1h5A2eBEkq7HibZuAs8y1FhcC8NFFDvzh" target="_blank">View Album</a>
+                </div>
+            </div>
+            <div class="album-card hidden" id="card5">
+                <img src="photos/players/BS.JPG" alt="Album 5">
+                <div class="content">
+                    <h2>Buddo Vs SMACK- SemiFinal 1</h2>
+                    <a href="https://drive.google.com/drive/folders/1-kz8aEQZV0dy717eoe6j9tSr0OoeU-GC" target="_blank">View Album</a>
+                </div>
+            </div>
+            <div class="album-card hidden" id="card6">
+                <img src="photos/players/ngo.jpg" alt="Album 6">
+                <div class="content">
+                    <h2>League Finals 2025</h2>
+                    <a href="https://mega.nz/folder/cx4BUBQZ#y6w-EhugEw3PYYZpCGH_JA" target="_blank">View Album</a>
+                </div>
+            </div>
+            <div class="album-card hidden" id="card6">
+                <img src="photos/leaders/kabaka.JPG" alt="Album 6">
+                <div class="content">
+                    <h2>Schools Kabaka Coronation 7s Launch</h2>
+                    <a href="https://photos.app.goo.gl/Df3hvboHQekNbfY29" target="_blank">View Album</a>
+                </div>
+            </div>
+        </div>
+        <button id="view-more">View More Albums</button>
+    </div>
+
+    <footer id="footer" style="background-color: var(--primary-red); color: white; text-align: center; padding: 20px; margin-top: 40px;">
+        <p>&copy; 2025 Photo Albums. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // View More functionality with animation
+        const viewMoreBtn = document.getElementById('view-more');
+        const hiddenCards = document.querySelectorAll('.album-card.hidden');
+
+        viewMoreBtn.addEventListener('click', () => {
+            hiddenCards.forEach((card, index) => {
+                card.classList.remove('hidden');
+                card.style.animationDelay = `${0.1 * (index + 1)}s`;
+                card.style.animation = 'fadeInUp 0.5s forwards';
+            });
+            viewMoreBtn.style.display = 'none';
+        });
+
+        // Intersection Observer for scroll animations (re-apply if needed)
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.5s forwards';
+                }
+            });
+        });
+
+        document.querySelectorAll('.album-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+    
+    <!-- Vercel Analytics -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
