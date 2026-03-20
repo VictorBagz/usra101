@@ -21,8 +21,8 @@ module.exports = async (req, res) => {
     const { id } = req.query;
 
     if (!id) {
-        // Return the default page if no ID
-        res.redirect(307, '/news-detail.html');
+        // No ID provided - send to news list
+        res.redirect(307, '/news.html');
         return;
     }
 
@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
             .single();
 
         if (error || !article) {
-            res.redirect(307, '/news-detail.html');
+            res.redirect(307, `/news-detail.html?id=${id}`);
             return;
         }
 
@@ -93,7 +93,6 @@ module.exports = async (req, res) => {
         res.status(200).send(html);
     } catch (error) {
         console.error('Error fetching article:', error);
-        res.redirect(307, '/news-detail.html');
+        res.redirect(307, `/news-detail.html?id=${id}`);
     }
 };
-
