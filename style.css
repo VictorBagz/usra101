@@ -141,14 +141,23 @@ p {
     letter-spacing: 0.01em;
 }
 
-/* Desktop menu */
+/* Desktop menu — fixed overlay aligned to navbar row.
+   nav-menu lives OUTSIDE <header> to avoid stacking context issues on mobile,
+   so on desktop we pin it back into the navbar row with position:fixed. */
 .nav-menu {
-    flex-grow: 1;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 1.5rem;
+    padding: 0 2rem;
+    z-index: 1001; /* above #navbar (1000) so links receive pointer events */
+    pointer-events: none; /* transparent to page clicks */
 }
+.nav-menu > * { pointer-events: auto; } /* but nav children are fully interactive */
 .nav-links {
     display: flex;
     list-style: none;
@@ -705,6 +714,7 @@ footer .container {
         -webkit-overflow-scrolling: touch;
         transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: -4px 0 30px rgba(0,0,0,0.4);
+        pointer-events: auto; /* override desktop pointer-events:none */
     }
     .nav-menu.active { right: 0; }
 
