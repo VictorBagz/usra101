@@ -606,7 +606,7 @@
                         .from('news')
                         .select('title, content, image_url, created_at')
                         .eq('id', articleId)
-                        .single();
+                        .maybeSingle();
                     
                     if (article) {
                         updatePageMetadata(article, article.image_url || 'photos/logos/usraLogo.png');
@@ -649,7 +649,7 @@
                     .from('news')
                     .select('*')
                     .eq('id', articleId)
-                    .single();
+                    .maybeSingle();
 
                 if (error) throw error;
 
