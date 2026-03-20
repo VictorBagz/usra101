@@ -525,8 +525,6 @@
         .btn-add-news:hover { background: #a00; }
 
         .news-management-list {
-            max-height: 600px;
-            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -636,10 +634,12 @@
             font-size: 0.88rem;
             color: #555;
             line-height: 1.6;
-            max-height: 200px;
+            max-height: 130px;
             overflow-y: auto;
             word-break: break-word;
         }
+        .news-content p { margin: 0 0 6px; }
+        .news-content img { max-width: 100%; height: auto; }
 
         .news-item-actions {
             display: flex;
@@ -1237,7 +1237,7 @@
                                         <img src="${item.image_url}" alt="${escapeHtml(item.title)}">
                                     </div>
                                 ` : ''}
-                                <div class="news-content">${escapeHtml(item.content)}</div>
+                                <div class="news-content">${item.content}</div>
                             </div>
                             <div class="news-item-actions">
                                 <button class="btn-edit" data-id="${item.id}" title="Edit">
@@ -1330,10 +1330,14 @@
                 document.getElementById('newsTitle').value = news.title;
                 document.getElementById('newsSource').value = news.source || '';
 
-                // Initialize and populate Quill editor
+                // Initialize Quill and load content correctly
                 initializeQuillEditor();
-                quillEditor.root.innerHTML = news.content;
+                quillEditor.clipboard.dangerouslyPasteHTML(news.content || '');
 
+                // Store existing image URL so save can preserve it
+                document.getElementById('newsForm').dataset.existingImageUrl = news.image_url || '';
+
+                const previewImg = document.getElementById('previewImg');
                 if (news.image_url) {
                     const previewImg = document.getElementById('previewImg');
                     previewImg.src = news.image_url;
@@ -1440,6 +1444,7 @@
             document.getElementById('newsModalTitle').textContent = 'Add News';
             document.getElementById('newsForm').reset();
             document.getElementById('newsId').value = '';
+            document.getElementById('newsForm').dataset.existingImageUrl = '';
             
             // Initialize and clear editor
             initializeQuillEditor();
@@ -1467,7 +1472,7 @@
                 if (error) throw error;
 
                 await loadNews();
-                ErrorHandler.showError('News item deleted successfully.');
+                ErrorHandler.showSuccess('News item deleted successfully.');
 
             } catch (error) {
                 console.error('Error deleting news:', error);
@@ -1500,50 +1505,35 @@
 
             const id = document.getElementById('newsId').value;
             const title = document.getElementById('newsTitle').value;
-            
-            // Get content from Quill editor (as HTML)
             const content = quillEditor ? quillEditor.root.innerHTML : '';
-            
             const newsType = document.getElementById('newsType').value;
             const source = document.getElementById('newsSource').value;
             const imageFile = document.getElementById('newsImage').files[0];
+            const existingImageUrl = this.dataset.existingImageUrl || '';
             const isEdit = !!id;
 
-            // Validation
-            if (!title.trim()) {
-                ErrorHandler.showError('Please enter a title.');
-                return;
-            }
-            if (!content.trim() || content === '<p><br></p>') {
-                ErrorHandler.showError('Please enter content.');
-                return;
-            }
-            if (!newsType) {
-                ErrorHandler.showError('Please select news type.');
-                return;
-            }
-            if (!source) {
-                ErrorHandler.showError('Please select a source.');
-                return;
-            }
+            if (!title.trim()) { ErrorHandler.showError('Please enter a title.'); return; }
+            if (!content.trim() || content === '<p><br></p>') { ErrorHandler.showError('Please enter content.'); return; }
+            if (!newsType) { ErrorHandler.showError('Please select news type.'); return; }
+            if (!source) { ErrorHandler.showError('Please select a source.'); return; }
+
+            const saveBtn = this.querySelector('button[type="submit"]');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
 
             try {
-                let imageUrl = '';
-                
-                // Upload image if provided
+                let imageUrl = existingImageUrl; // keep existing image by default
+
                 if (imageFile) {
                     const fileExt = imageFile.name.split('.').pop();
                     const fileName = `${Date.now()}.${fileExt}`;
-                    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                    const { error: uploadError } = await supabaseClient.storage
                         .from('news-images')
                         .upload(fileName, imageFile);
-
                     if (uploadError) throw uploadError;
-
                     const { data: { publicUrl } } = supabaseClient.storage
                         .from('news-images')
                         .getPublicUrl(fileName);
-
                     imageUrl = publicUrl;
                 }
 
@@ -1552,38 +1542,30 @@
                     content,
                     news_type: newsType,
                     source,
+                    image_url: imageUrl || null,
                     updated_at: new Date().toISOString()
                 };
 
-                if (imageUrl) {
-                    newsData.image_url = imageUrl;
-                }
-
                 let error;
-
                 if (isEdit) {
-                    const result = await supabaseClient
-                        .from('news')
-                        .update(newsData)
-                        .eq('id', id);
-                    error = result.error;
+                    ({ error } = await supabaseClient.from('news').update(newsData).eq('id', id));
                 } else {
                     newsData.created_at = new Date().toISOString();
-                    const result = await supabaseClient
-                        .from('news')
-                        .insert([newsData]);
-                    error = result.error;
+                    ({ error } = await supabaseClient.from('news').insert([newsData]));
                 }
 
                 if (error) throw error;
 
                 closeNewsModal();
                 await loadNews();
-                ErrorHandler.showError(isEdit ? 'News updated successfully!' : 'News added successfully!');
+                ErrorHandler.showSuccess(isEdit ? 'News updated successfully!' : 'News added successfully!');
 
             } catch (error) {
                 console.error('Error saving news:', error);
                 ErrorHandler.showError('Failed to save news item.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
             }
         });
 
