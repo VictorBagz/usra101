@@ -128,10 +128,8 @@
 
         .article-image {
             width: 100%;
-            /* fluid — never overflows, aspect-ratio maintains proportion */
-            aspect-ratio: 16 / 9;
+            height: 500px;
             object-fit: cover;
-            display: block;
         }
 
         .article-content {
@@ -256,7 +254,6 @@
         /* Image optimization */
         .article-body img {
             max-width: 100%;
-            width: auto;
             height: auto;
             display: block;
             margin: 25px auto;
@@ -488,32 +485,33 @@
                 gap: 15px;
             }
 
-            /* article-image is already fluid via aspect-ratio — no override needed */
+            .article-image {
+                height: 300px;
+            }
 
             .article-content {
-                padding: 20px;
+                padding: 25px;
             }
 
             .article-title {
-                font-size: 1.6rem;
+                font-size: 1.8rem;
             }
 
             .article-body {
                 font-size: 1rem;
             }
 
-            /* Inline images inside article body */
+            /* Mobile image optimization */
             .article-body img {
-                max-width: 100%;
-                margin: 16px auto;
+                max-width: calc(100vw - 50px);
+                margin: 20px auto;
             }
 
             .article-body pre {
                 padding: 12px;
                 font-size: 0.85rem;
-                margin: 15px 0;
-                border-radius: 6px;
-                overflow-x: auto;
+                margin: 15px -5px;
+                border-radius: 0;
             }
 
             .article-body table {
@@ -539,20 +537,6 @@
 
             .view-all-news-btn {
                 padding: 12px 30px;
-                font-size: 0.95rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .article-content {
-                padding: 16px;
-            }
-
-            .article-title {
-                font-size: 1.35rem;
-            }
-
-            .article-body {
                 font-size: 0.95rem;
             }
         }
@@ -831,7 +815,7 @@
 
         function copyArticleLink(articleId) {
             // Use the API endpoint which serves metadata for crawlers
-            const articleUrl = `${window.location.origin}/api/news-detail?id=${articleId}`;
+            const articleUrl = `${window.location.origin}/news-detail.html?id=${articleId}`;
             
             // Use modern clipboard API
             navigator.clipboard.writeText(articleUrl).then(() => {
