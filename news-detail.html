@@ -134,6 +134,7 @@
 
         .article-content {
             padding: 40px;
+            overflow: hidden;
         }
 
         .article-badge {
@@ -251,27 +252,28 @@
             margin-bottom: 20px;
         }
 
-        /* Image optimization */
-        .article-body img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 25px auto;
+        /* ===== RESPONSIVE IMAGES - overrides ALL Quill inline styles ===== */
+        .article-body img,
+        .article-body figure img,
+        .article-body p img,
+        .article-body span img {
+            max-width: 100% !important;
+            width: auto !important;
+            height: auto !important;
+            display: block !important;
+            margin: 20px auto !important;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            object-fit: contain !important;
+            float: none !important;
         }
 
         .article-body figure {
-            max-width: 100%;
-            margin: 25px auto;
-            padding: 0;
-        }
-
-        .article-body figure img {
-            max-width: 100%;
-            width: 100%;
-            height: auto;
-            margin: 0 auto;
+            max-width: 100% !important;
+            width: 100% !important;
+            margin: 20px auto !important;
+            padding: 0 !important;
+            overflow: hidden;
         }
 
         .article-body figcaption {
@@ -502,9 +504,19 @@
             }
 
             /* Mobile image optimization */
-            .article-body img {
-                max-width: calc(100vw - 50px);
-                margin: 20px auto;
+            .article-body img,
+            .article-body figure img,
+            .article-body p img {
+                max-width: 100% !important;
+                width: auto !important;
+                height: auto !important;
+                margin: 15px auto !important;
+                float: none !important;
+            }
+
+            .article-content {
+                padding: 20px !important;
+                overflow: hidden !important;
             }
 
             .article-body pre {
@@ -668,15 +680,11 @@
 
         function displayArticle(article) {
             const articleContent = document.getElementById('articleContent');
-            
-            // Format content with paragraphs
-            const formattedContent = article.content
-                .split('\n')
-                .filter(p => p.trim())
-                .map(p => `<p>${p}</p>`)
-                .join('');
 
             const imageUrl = article.image_url || 'photos/logos/usraLogo.png';
+
+            // Use content as raw HTML (Quill saves HTML) - do NOT re-wrap in <p> tags
+            const rawContent = article.content || '';
 
             articleContent.innerHTML = `
                 <article class="article-card">
@@ -704,11 +712,24 @@
                             </button>
                         </div>
                         <div class="article-body">
-                            ${formattedContent}
+                            ${rawContent}
                         </div>
                     </div>
                 </article>
             `;
+
+            // Strip all inline width/height from images inserted by Quill
+            articleContent.querySelectorAll('.article-body img').forEach(img => {
+                img.removeAttribute('width');
+                img.removeAttribute('height');
+                img.style.removeProperty('width');
+                img.style.removeProperty('height');
+                img.style.removeProperty('float');
+                img.style.removeProperty('margin');
+                img.style.maxWidth = '100%';
+                img.style.height = 'auto';
+                img.style.display = 'block';
+            });
 
             // Attach event listener to copy button
             const copyBtn = articleContent.querySelector('.copy-link-btn');
