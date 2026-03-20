@@ -128,8 +128,10 @@
 
         .article-image {
             width: 100%;
-            height: 500px;
+            /* fluid — never overflows, aspect-ratio maintains proportion */
+            aspect-ratio: 16 / 9;
             object-fit: cover;
+            display: block;
         }
 
         .article-content {
@@ -254,6 +256,7 @@
         /* Image optimization */
         .article-body img {
             max-width: 100%;
+            width: auto;
             height: auto;
             display: block;
             margin: 25px auto;
@@ -485,33 +488,32 @@
                 gap: 15px;
             }
 
-            .article-image {
-                height: 300px;
-            }
+            /* article-image is already fluid via aspect-ratio — no override needed */
 
             .article-content {
-                padding: 25px;
+                padding: 20px;
             }
 
             .article-title {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
 
             .article-body {
                 font-size: 1rem;
             }
 
-            /* Mobile image optimization */
+            /* Inline images inside article body */
             .article-body img {
-                max-width: calc(100vw - 50px);
-                margin: 20px auto;
+                max-width: 100%;
+                margin: 16px auto;
             }
 
             .article-body pre {
                 padding: 12px;
                 font-size: 0.85rem;
-                margin: 15px -5px;
-                border-radius: 0;
+                margin: 15px 0;
+                border-radius: 6px;
+                overflow-x: auto;
             }
 
             .article-body table {
@@ -537,6 +539,20 @@
 
             .view-all-news-btn {
                 padding: 12px 30px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .article-content {
+                padding: 16px;
+            }
+
+            .article-title {
+                font-size: 1.35rem;
+            }
+
+            .article-body {
                 font-size: 0.95rem;
             }
         }
