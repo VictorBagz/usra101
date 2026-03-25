@@ -7,21 +7,26 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 function escapeHtml(text) {
     if (!text) return '';
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+function stripHtml(html) {
+    if (!html) return '';
+    return html
+        .replace(/<[^>]*>/g, '')   // remove all HTML tags
+        .replace(/&nbsp;/g, ' ')   // decode &nbsp;
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/\s+/g, ' ')      // collapse whitespace
+        .trim();
 }
 
 module.exports = async (req, res) => {
     const { id } = req.query;
 
     if (!id) {
-        // No ID provided - send to news list
         res.redirect(307, '/news.html');
         return;
     }
@@ -31,29 +36,34 @@ module.exports = async (req, res) => {
             .from('news')
             .select('*')
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
         if (error || !article) {
+            // Always preserve the id so user lands on the right page
             res.redirect(307, `/news-detail.html?id=${id}`);
             return;
         }
 
         const baseUrl = 'https://ugandaschoolsrugby.com';
-        let imageUrl = article.image_url || 'photos/logos/usraLogo.png';
-        
-        if (!imageUrl.startsWith('http')) {
+
+        // Make sure image URL is absolute
+        let imageUrl = article.image_url || '';
+        if (imageUrl && !imageUrl.startsWith('http')) {
             imageUrl = baseUrl + '/' + imageUrl.replace(/^\//, '');
         }
+        if (!imageUrl) {
+            imageUrl = baseUrl + '/photos/logos/usraLogo.png';
+        }
 
-        // Extract description from content
-        const description = article.content
-            ? article.content.substring(0, 160).replace(/\n/g, ' ').trim() + '...'
-            : article.title.substring(0, 160);
+        // Strip HTML from Quill content to get clean plain-text description
+        const plainContent = stripHtml(article.content || '');
+        const description = plainContent.length > 0
+            ? plainContent.substring(0, 200) + (plainContent.length > 200 ? '...' : '')
+            : article.title;
 
         const articleUrl = `${baseUrl}/api/news-detail?id=${id}`;
         const publishedDate = new Date(article.created_at).toISOString();
 
-        // Generate HTML with proper metadata for crawlers
         const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,38 +71,40 @@ module.exports = async (req, res) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${escapeHtml(article.title)} - USRA News</title>
     <meta name="description" content="${escapeHtml(description)}">
+
+    <!-- Open Graph tags - read by WhatsApp, Facebook, Telegram etc -->
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Uganda Schools Rugby Association">
+    <meta property="og:url" content="${articleUrl}">
     <meta property="og:title" content="${escapeHtml(article.title)}">
     <meta property="og:description" content="${escapeHtml(description)}">
     <meta property="og:image" content="${imageUrl}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="${articleUrl}">
-    <meta property="og:site_name" content="USRA - Uganda Schools Rugby Association">
     <meta property="og:locale" content="en_US">
     <meta property="article:published_time" content="${publishedDate}">
-    <meta property="article:modified_time" content="${publishedDate}">
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="${escapeHtml(article.title)}">
     <meta name="twitter:description" content="${escapeHtml(description)}">
     <meta name="twitter:image" content="${imageUrl}">
-    <link rel="icon" type="image/png" href="${imageUrl}">
-    <link rel="apple-touch-icon" href="${imageUrl}">
-    <!-- Redirect to actual news detail page -->
-    <script>
-        window.location.replace('/news-detail.html?id=${id}');
-    </script>
+
+    <!-- Redirect real users to the actual article page -->
+    <script>window.location.replace('/news-detail.html?id=${id}');</script>
 </head>
 <body>
-    <p>Redirecting to article...</p>
+    <p>Loading article...</p>
 </body>
 </html>`;
 
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        // No-cache so sharing bots always get fresh data
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         res.status(200).send(html);
-    } catch (error) {
-        console.error('Error fetching article:', error);
+
+    } catch (err) {
+        console.error('Error fetching article:', err);
         res.redirect(307, `/news-detail.html?id=${id}`);
     }
 };
