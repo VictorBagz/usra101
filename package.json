@@ -1,4 +1,9 @@
 {
+  "name": "usra-website",
+  "version": "1.0.0",
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",
     "@vercel/analytics": "^1.5.0"
