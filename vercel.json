@@ -1,13 +1,8 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "api/article.js", "use": "@vercel/node" },
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "*.css", "use": "@vercel/static" },
-    { "src": "photos/**", "use": "@vercel/static" }
-  ],
   "routes": [
-    { "src": "/api/article", "dest": "/api/article.js" },
-    { "src": "/(.*)", "dest": "/$1" }
+    {
+      "src": "/api/article",
+      "dest": "/api/article.js"
+    }
   ]
 }
