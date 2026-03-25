@@ -1,9 +1,8 @@
 {
-  "framework": null,
-  "outputDirectory": ".",
-  "functions": {
-    "middleware.js": {
-      "runtime": "edge"
+  "rewrites": [
+    {
+      "source": "/api/article",
+      "destination": "/api/article.js"
     }
-  }
+  ]
 }
