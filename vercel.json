@@ -1,8 +1,9 @@
 {
-  "rewrites": [
-    {
-      "source": "/news-detail.html",
-      "destination": "/api/news-detail"
+  "framework": null,
+  "outputDirectory": ".",
+  "functions": {
+    "middleware.js": {
+      "runtime": "edge"
     }
-  ]
+  }
 }
