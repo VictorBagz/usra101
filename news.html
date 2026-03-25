@@ -84,7 +84,7 @@
         }
 
         .hero-section {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
                         url('photos/players/p17.jpg') center/cover;
             color: white;
             padding: 80px 20px;
@@ -140,12 +140,10 @@
 
         .news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
             margin-top: 30px;
-            /* FIX: was 'align-items: stretch' — that forced all cards in a row to the
-               same height as the tallest one, creating blank gaps inside shorter cards */
-            align-items: start;
+            align-items: stretch;
         }
 
         .news-card {
@@ -156,8 +154,7 @@
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            /* FIX: removed height: 100% — this was what inflated shorter cards to
-               match their row's tallest sibling, causing the internal blank gaps */
+            height: 100%;
         }
 
         .news-card:hover {
@@ -167,7 +164,7 @@
 
         .news-image {
             width: 100%;
-            aspect-ratio: 16 / 9;
+            height: 200px;
             overflow: hidden;
             position: relative;
             flex-shrink: 0;
@@ -177,7 +174,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
             transition: transform 0.3s;
         }
 
@@ -215,6 +211,7 @@
 
         .news-content {
             padding: 25px;
+            flex: 1;
             display: flex;
             flex-direction: column;
         }
@@ -239,11 +236,11 @@
         }
 
         .news-title {
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #333;
-            margin-bottom: 15px;
-            line-height: 1.3;
+            margin-bottom: 10px;
+            line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
@@ -253,9 +250,9 @@
 
         .news-excerpt {
             color: #555;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             line-height: 1.6;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             line-clamp: 3;
@@ -272,9 +269,15 @@
             text-decoration: none;
             font-weight: 600;
             transition: gap 0.3s;
-            padding-top: 15px;
+            margin-top: auto;
+            padding-top: 12px;
             border-top: 1px solid #f0f0f0;
             width: fit-content;
+            align-self: flex-start;
+        }
+
+        .read-more:hover {
+            gap: 12px;
         }
 
         .read-more:hover {
@@ -397,8 +400,13 @@
             color: white;
         }
 
-        .edit-btn { background-color: #2196F3; }
-        .delete-btn { background-color: #dc3545; }
+        .edit-btn {
+            background-color: #2196F3;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+        }
 
         .action-btn:hover {
             transform: scale(1.1);
@@ -417,17 +425,36 @@
             text-decoration: none;
         }
 
-        @media (max-width: 768px) {
+        /* Tablet: 2 columns */
+        @media (max-width: 1024px) {
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        /* Mobile: 1 column */
+        @media (max-width: 640px) {
             .header-container {
                 flex-direction: column;
                 gap: 15px;
             }
 
-            .hero-section h2 { font-size: 2rem; }
-            .hero-section p  { font-size: 1rem; }
+            .hero-section h2 {
+                font-size: 2rem;
+            }
+
+            .hero-section p {
+                font-size: 1rem;
+            }
 
             .news-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .news-image {
+                height: 180px;
             }
 
             .filter-section {
@@ -435,370 +462,578 @@
                 align-items: stretch;
             }
 
-            .filter-btn { width: 100%; }
+            .filter-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
+    <header>
+        <div class="header-container">
+            <div class="logo-section">
+                <img src="photos/logos/usraLogo.png" alt="USRA Logo">
+                <div class="logo-text">
+                    <h1>USRA News</h1>
+                    <p>Latest Updates & Stories</p>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-<header>
-    <div class="header-container">
-        <div class="logo-section">
-            <img src="photos/logos/usraLogo.png" alt="USRA Logo">
-            <div class="logo-text">
-                <h1>USRA News</h1>
-                <p>Latest Updates & Stories</p>
+    <section class="hero-section">
+        <h2>Latest News & Updates</h2>
+        <p>Stay informed with the latest news, stories, and updates from Uganda Schools Rugby Association</p>
+    </section>
+
+    <section class="filter-section">
+        <button class="filter-btn active" data-filter="all">All News</button>
+        <button class="filter-btn" data-filter="breaking">Breaking News</button>
+        <button class="filter-btn" data-filter="featured">Featured</button>
+    </section>
+
+    <section class="news-container">
+        <div id="newsGrid" class="news-grid">
+            <div id="loadingState" class="loading-container" style="grid-column: 1/-1;">
+                <div class="spinner"></div>
+                <p class="loading-text">Loading latest news...</p>
+                <p class="loading-subtext">Please wait while we fetch the latest updates</p>
+            </div>
+            <div id="errorState" class="error-container" style="display: none; grid-column: 1/-1;">
+                <i class="fas fa-exclamation-circle error-icon"></i>
+                <h3 class="error-title">Unable to load news</h3>
+                <p class="error-message">There was a problem connecting to the server.</p>
+                <button onclick="retryLoading()" class="retry-button">
+                    <i class="fas fa-sync-alt"></i> Try Again
+                </button>
             </div>
         </div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
+    </section>
 
-<section class="hero-section">
-    <h2>Latest News & Updates</h2>
-    <p>Stay informed with the latest news, stories, and updates from Uganda Schools Rugby Association</p>
-</section>
+    <footer>
+        <p>&copy; 2025 Uganda Schools Rugby Association. All Rights Reserved.</p>
+        <p>Visit our <a href="index.html">homepage</a> for more information</p>
+    </footer>
 
-<section class="filter-section">
-    <button class="filter-btn active" data-filter="all">All News</button>
-    <button class="filter-btn" data-filter="breaking">Breaking News</button>
-    <button class="filter-btn" data-filter="featured">Featured</button>
-</section>
+    <!-- IMPORTANT: Load Supabase library BEFORE your custom script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        const SUPABASE_URL = 'https://vzvtymgtegqupyjezfgd.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6dnR5bWd0ZWdxdXB5amV6ZmdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2MjUyNTgsImV4cCI6MjA3NTIwMTI1OH0.hhThAdMLbc3Ircx9YnEOfvPFr3LjQUjISl6zW5ZpFtE';
 
-<section class="news-container">
-    <div id="newsGrid" class="news-grid">
-        <div id="loadingState" class="loading-container" style="grid-column: 1/-1;">
-            <div class="spinner"></div>
-            <p class="loading-text">Loading latest news...</p>
-            <p class="loading-subtext">Please wait while we fetch the latest updates</p>
-        </div>
-        <div id="errorState" class="error-container" style="display: none; grid-column: 1/-1;">
-            <i class="fas fa-exclamation-circle error-icon"></i>
-            <h3 class="error-title">Unable to load news</h3>
-            <p class="error-message">There was a problem connecting to the server.</p>
-            <button onclick="retryLoading()" class="retry-button">
-                <i class="fas fa-sync-alt"></i> Try Again
-            </button>
-        </div>
-    </div>
-</section>
+        let supabaseClient;
+        let allNews = [];
+        let currentFilter = 'all';
 
-<footer>
-    <p>&copy; 2025 Uganda Schools Rugby Association. All Rights Reserved.</p>
-    <p>Visit our <a href="index.html">homepage</a> for more information</p>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    const SUPABASE_URL = 'https://vzvtymgtegqupyjezfgd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6dnR5bWd0ZWdxdXB5amV6ZmdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2MjUyNTgsImV4cCI6MjA3NTIwMTI1OH0.hhThAdMLbc3Ircx9YnEOfvPFr3LjQUjISl6zW5ZpFtE';
-
-    let supabaseClient;
-    let allNews = [];
-    let currentFilter = 'all';
-
-    function getSourceLabel(source) {
-        const sources = {
-            'local': 'Local Source',
-            'online': 'Online Source',
-            'uru': 'Uganda Rugby Union',
-            'usra': 'USRA Media'
-        };
-        return sources[source] || source;
-    }
-
-    function truncateText(text, maxLength) {
-        if (!text) return '';
-        if (text.length <= maxLength) return text;
-        return text.substr(0, maxLength) + '...';
-    }
-
-    function formatDate(dateString) {
-        try {
-            const date = new Date(dateString);
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
-        } catch (error) {
-            return 'Unknown date';
+        function getSourceLabel(source) {
+            const sources = {
+                'local': 'Local Source',
+                'online': 'Online Source',
+                'uru': 'Uganda Rugby Union',
+                'usra': 'USRA Media'
+            };
+            return sources[source] || source;
         }
-    }
 
-    function showLoadingState() {
-        const loadingState = document.getElementById('loadingState');
-        const errorState   = document.getElementById('errorState');
-        const newsGrid     = document.getElementById('newsGrid');
-        if (loadingState) loadingState.style.display = 'block';
-        if (errorState)   errorState.style.display   = 'none';
-        newsGrid.querySelectorAll('.news-card').forEach(c => c.remove());
-    }
-
-    function hideLoadingState() {
-        const loadingState = document.getElementById('loadingState');
-        if (loadingState) loadingState.style.display = 'none';
-    }
-
-    function showErrorState(message) {
-        hideLoadingState();
-        const errorState = document.getElementById('errorState');
-        if (errorState) {
-            errorState.style.display = 'block';
-            const errorMsg = errorState.querySelector('.error-message');
-            if (errorMsg) errorMsg.textContent = message;
+        function truncateText(text, maxLength) {
+            if (!text) return '';
+            // Strip HTML tags (Quill saves HTML) to get plain text
+            const plain = text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+            if (!plain) return '';
+            if (plain.length <= maxLength) return plain;
+            return plain.substr(0, maxLength) + '...';
         }
-    }
 
-    async function retryLoading() { await loadNews(); }
-
-    async function loadNews() {
-        showLoadingState();
-
-        if (!supabaseClient && window.supabase && window.supabase.createClient) {
+        function formatDate(dateString) {
             try {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                const date = new Date(dateString);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
             } catch (error) {
-                showErrorState('Failed to initialize database connection');
-                return;
+                return 'Unknown date';
             }
         }
 
-        let attempts = 0;
-        while ((!window.supabase || !supabaseClient) && attempts < 20) {
-            await new Promise(resolve => setTimeout(resolve, 250));
-            if (window.supabase && window.supabase.createClient && !supabaseClient) {
+        function showLoadingState() {
+            const loadingState = document.getElementById('loadingState');
+            const errorState = document.getElementById('errorState');
+            const newsGrid = document.getElementById('newsGrid');
+            
+            if (loadingState) loadingState.style.display = 'block';
+            if (errorState) errorState.style.display = 'none';
+            
+            // Clear only the news cards, keep loading/error states
+            const cards = newsGrid.querySelectorAll('.news-card');
+            cards.forEach(card => card.remove());
+        }
+
+        function hideLoadingState() {
+            const loadingState = document.getElementById('loadingState');
+            if (loadingState) loadingState.style.display = 'none';
+        }
+
+        function showErrorState(message) {
+            hideLoadingState();
+            const errorState = document.getElementById('errorState');
+            if (errorState) {
+                errorState.style.display = 'block';
+                const errorMsg = errorState.querySelector('.error-message');
+                if (errorMsg) errorMsg.textContent = message;
+            }
+        }
+
+        async function retryLoading() {
+            await loadNews();
+        }
+
+        async function loadNews() {
+            showLoadingState();
+            
+            // Initialize Supabase if not already done
+            if (!supabaseClient && window.supabase && window.supabase.createClient) {
                 try {
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                } catch (e) { /* keep waiting */ }
+                    console.log('Supabase client initialized successfully');
+                } catch (error) {
+                    console.error('Failed to initialize Supabase:', error);
+                    showErrorState('Failed to initialize database connection');
+                    return;
+                }
             }
-            attempts++;
+
+            // Wait for Supabase to be available
+            let attempts = 0;
+            const maxAttempts = 20;
+            
+            while ((!window.supabase || !supabaseClient) && attempts < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 250));
+                if (window.supabase && window.supabase.createClient && !supabaseClient) {
+                    try {
+                        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                        console.log('Supabase client initialized on attempt', attempts + 1);
+                    } catch (error) {
+                        console.error('Failed to initialize Supabase:', error);
+                    }
+                }
+                attempts++;
+            }
+            
+            if (!supabaseClient) {
+                showErrorState('Unable to connect to database. Please check your internet connection.');
+                return;
+            }
+
+            try {
+                console.log('Attempting to fetch news...');
+                
+                const { data: news, error } = await supabaseClient
+                    .from('news')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+
+                hideLoadingState();
+
+                if (!news || news.length === 0) {
+                    console.log('No news found in database');
+                    const newsGrid = document.getElementById('newsGrid');
+                    newsGrid.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <i class="fas fa-newspaper"></i>
+                            <h3>No news available</h3>
+                            <p>Check back later for updates</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                console.log(`Successfully loaded ${news.length} news items`);
+                allNews = news;
+                displayNews(news);
+
+            } catch (error) {
+                console.error('Error loading news:', error);
+                hideLoadingState();
+                const newsGrid = document.getElementById('newsGrid');
+                newsGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Unable to load news</h3>
+                        <p>Error: ${error.message || 'Unknown error'}</p>
+                        <button onclick="loadNews()" style="margin-top: 15px; padding: 10px 20px; background: #c00; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
         }
 
-        if (!supabaseClient) {
-            showErrorState('Unable to connect to database. Please check your internet connection.');
-            return;
-        }
+        function displayNews(newsItems) {
+            const newsGrid = document.getElementById('newsGrid');
 
-        try {
-            const { data: news, error } = await supabaseClient
-                .from('news')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-
-            hideLoadingState();
-
-            if (!news || news.length === 0) {
-                document.getElementById('newsGrid').innerHTML = `
-                    <div class="empty-state" style="grid-column:1/-1;">
+            if (!newsItems || newsItems.length === 0) {
+                newsGrid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
                         <i class="fas fa-newspaper"></i>
                         <h3>No news available</h3>
                         <p>Check back later for updates</p>
-                    </div>`;
+                    </div>
+                `;
                 return;
             }
 
-            allNews = news;
-            displayNews(news);
-
-        } catch (error) {
-            hideLoadingState();
-            document.getElementById('newsGrid').innerHTML = `
-                <div class="empty-state" style="grid-column:1/-1;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Unable to load news</h3>
-                    <p>Error: ${error.message || 'Unknown error'}</p>
-                    <button onclick="loadNews()" style="margin-top:15px;padding:10px 20px;background:#c00;color:white;border:none;border-radius:5px;cursor:pointer;">
-                        Retry
-                    </button>
-                </div>`;
-        }
-    }
-
-    function displayNews(newsItems) {
-        const newsGrid = document.getElementById('newsGrid');
-
-        if (!newsItems || newsItems.length === 0) {
-            newsGrid.innerHTML = `
-                <div class="empty-state" style="grid-column:1/-1;">
-                    <i class="fas fa-newspaper"></i>
-                    <h3>No news available</h3>
-                    <p>Check back later for updates</p>
-                </div>`;
-            return;
-        }
-
-        newsGrid.innerHTML = newsItems.map(item => {
-            const imageUrl  = item.image_url  || 'photos/logos/usraLogo.png';
-            const title     = item.title      || 'Untitled';
-            const content   = item.content    || 'No content available';
-            const newsType  = item.news_type  || 'featured';
-            const source    = item.source     || 'usra';
-            const createdAt = item.created_at || new Date().toISOString();
-
-            return `
-                <article class="news-card" data-id="${item.id}">
-                    <div class="news-image">
-                        <img src="${imageUrl}" alt="${title}"
-                             onerror="this.src='photos/logos/usraLogo.png'">
-                        <span class="news-badge ${newsType}">
-                            ${newsType === 'breaking' ? 'Breaking News' : 'Featured'}
-                        </span>
-                    </div>
-                    <div class="news-content">
-                        <div class="news-meta">
-                            <span class="news-meta-item">
-                                <i class="fas fa-newspaper"></i>
-                                ${getSourceLabel(source)}
-                            </span>
-                            <span class="news-meta-item">
-                                <i class="far fa-calendar-alt"></i>
-                                ${formatDate(createdAt)}
+            newsGrid.innerHTML = newsItems.map((item) => {
+                const imageUrl = item.image_url || 'photos/logos/usraLogo.png';
+                const title = item.title || 'Untitled';
+                const content = item.content || 'No content available';
+                const newsType = item.news_type || 'featured';
+                const source = item.source || 'usra';
+                const createdAt = item.created_at || new Date().toISOString();
+                
+                return `
+                    <article class="news-card" data-id="${item.id}">
+                        <div class="news-image">
+                            <img src="${imageUrl}" 
+                                 alt="${title}"
+                                 onerror="this.src='photos/logos/usraLogo.png'">
+                            <span class="news-badge ${newsType}">
+                                ${newsType === 'breaking' ? 'Breaking News' : 'Featured'}
                             </span>
                         </div>
-                        <h3 class="news-title">${title}</h3>
-                        <p class="news-excerpt">${truncateText(content, 150)}</p>
-                        <a href="news-detail.html?id=${item.id}" class="read-more">
-                            Read Full Article <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </article>`;
-        }).join('');
-    }
+                        <div class="news-content">
+                            <div class="news-meta">
+                                <span class="news-meta-item">
+                                    <i class="fas fa-newspaper"></i>
+                                    ${getSourceLabel(source)}
+                                </span>
+                                <span class="news-meta-item">
+                                    <i class="far fa-calendar-alt"></i>
+                                    ${formatDate(createdAt)}
+                                </span>
+                            </div>
+                            <h3 class="news-title">${title}</h3>
+                            <p class="news-excerpt">${truncateText(content, 150)}</p>
+                            <a href="news-detail.html?id=${item.id}" class="read-more">
+                                Read Full Article <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
 
-    function filterNews(filterType) {
-        currentFilter = filterType;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.filter === filterType);
-        });
-        displayNews(filterType === 'all' ? allNews : allNews.filter(i => i.news_type === filterType));
-    }
+        function showNewsDetail(id) {
+            window.location.href = `news-detail.html?id=${id}`;
+        }
 
-    function escapeForJs(text) {
-        return text.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, ' ');
-    }
+        function filterNews(filterType) {
+            currentFilter = filterType;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filterType) {
+                    btn.classList.add('active');
+                }
+            });
 
-    async function copyShareLink(url, event) {
-        event.stopPropagation();
-        event.preventDefault();
-        try {
-            await navigator.clipboard.writeText(url);
-            showNotification('Link copied to clipboard!', 'success');
-        } catch (err) {
-            const ta = document.createElement('textarea');
-            ta.value = url;
-            ta.style.cssText = 'position:fixed;left:-999999px';
-            document.body.appendChild(ta);
-            ta.select();
+            let filtered = allNews;
+            if (filterType !== 'all') {
+                filtered = allNews.filter(item => item.news_type === filterType);
+            }
+
+            displayNews(filtered);
+        }
+
+        // Helper function to escape strings for JavaScript
+        function escapeForJs(text) {
+            return text.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, ' ');
+        }
+
+        // Copy share link to clipboard
+        async function copyShareLink(url, event) {
+            event.stopPropagation();
+            event.preventDefault();
+            
             try {
-                document.execCommand('copy');
+                await navigator.clipboard.writeText(url);
                 showNotification('Link copied to clipboard!', 'success');
-            } catch (e) {
-                showNotification('Failed to copy link', 'error');
-            }
-            document.body.removeChild(ta);
-        }
-    }
-
-    async function shareArticle(url, title, event) {
-        event.stopPropagation();
-        event.preventDefault();
-        if (navigator.share) {
-            try {
-                await navigator.share({ title, text: `Check out this article: ${title}`, url });
-                showNotification('Shared successfully!', 'success');
             } catch (err) {
-                if (err.name !== 'AbortError') console.log('Share cancelled');
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showNotification('Link copied to clipboard!', 'success');
+                } catch (error) {
+                    showNotification('Failed to copy link', 'error');
+                }
+                document.body.removeChild(textArea);
             }
-        } else {
-            showShareModal(url, title);
         }
-    }
 
-    function showShareModal(url, title) {
-        const encodedUrl   = encodeURIComponent(url);
-        const encodedTitle = encodeURIComponent(title);
-        const modal = document.createElement('div');
-        modal.id = 'shareModal';
-        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000;animation:fadeIn 0.3s;';
-        modal.innerHTML = `
-            <div style="background:white;border-radius:15px;padding:30px;max-width:400px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                    <h3 style="margin:0;color:#333;font-size:1.4rem;">Share Article</h3>
-                    <button onclick="closeShareModal()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:#666;">&times;</button>
-                </div>
-                <p style="color:#666;margin-bottom:20px;font-size:0.95rem;">${title}</p>
-                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
-                    <a href="https://wa.me/?text=${encodedTitle}%20${encodedUrl}" target="_blank" rel="noopener noreferrer"
-                       style="display:flex;align-items:center;gap:10px;padding:12px;background:#25D366;color:white;border-radius:8px;text-decoration:none;font-weight:600;">
-                        <i class="fab fa-whatsapp"></i> WhatsApp
-                    </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" target="_blank" rel="noopener noreferrer"
-                       style="display:flex;align-items:center;gap:10px;padding:12px;background:#1877F2;color:white;border-radius:8px;text-decoration:none;font-weight:600;">
-                        <i class="fab fa-facebook-f"></i> Facebook
-                    </a>
-                    <a href="https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}" target="_blank" rel="noopener noreferrer"
-                       style="display:flex;align-items:center;gap:10px;padding:12px;background:#1DA1F2;color:white;border-radius:8px;text-decoration:none;font-weight:600;">
-                        <i class="fab fa-twitter"></i> Twitter
-                    </a>
-                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}" target="_blank" rel="noopener noreferrer"
-                       style="display:flex;align-items:center;gap:10px;padding:12px;background:#0A66C2;color:white;border-radius:8px;text-decoration:none;font-weight:600;">
-                        <i class="fab fa-linkedin-in"></i> LinkedIn
-                    </a>
-                    <a href="mailto:?subject=${encodedTitle}&body=Check out this article: ${encodedUrl}"
-                       style="display:flex;align-items:center;gap:10px;padding:12px;background:#666;color:white;border-radius:8px;text-decoration:none;font-weight:600;">
-                        <i class="fas fa-envelope"></i> Email
-                    </a>
-                    <button onclick="copyShareLink('${url}', event); closeShareModal();"
-                       style="display:flex;align-items:center;gap:10px;padding:12px;background:#c00;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-family:'Poppins',sans-serif;">
-                        <i class="fas fa-link"></i> Copy Link
-                    </button>
-                </div>
-            </div>`;
-        document.body.appendChild(modal);
-        document.body.style.overflow = 'hidden';
-        modal.addEventListener('click', e => { if (e.target === modal) closeShareModal(); });
-    }
-
-    function closeShareModal() {
-        const modal = document.getElementById('shareModal');
-        if (modal) {
-            modal.style.animation = 'fadeOut 0.3s';
-            setTimeout(() => { modal.remove(); document.body.style.overflow = 'auto'; }, 300);
+        // Share article using native share or fallback
+        async function shareArticle(url, title, event) {
+            event.stopPropagation();
+            event.preventDefault();
+            
+            // Check if Web Share API is available (mobile browsers)
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: title,
+                        text: `Check out this article: ${title}`,
+                        url: url
+                    });
+                    showNotification('Shared successfully!', 'success');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        // User cancelled sharing, don't show error
+                        console.log('Share cancelled');
+                    }
+                }
+            } else {
+                // Fallback: Show share options modal
+                showShareModal(url, title);
+            }
         }
-    }
 
-    function showNotification(message, type = 'success') {
-        const existing = document.getElementById('notification');
-        if (existing) existing.remove();
-        const n = document.createElement('div');
-        n.id = 'notification';
-        n.style.cssText = `position:fixed;top:20px;right:20px;background:${type === 'success' ? '#28a745' : '#dc3545'};color:white;padding:15px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:10001;font-weight:600;display:flex;align-items:center;gap:10px;animation:slideIn 0.3s ease;`;
-        n.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-        document.body.appendChild(n);
-        setTimeout(() => { n.style.animation = 'slideOut 0.3s ease'; setTimeout(() => n.remove(), 300); }, 3000);
-    }
+        // Show share modal with different platform options
+        function showShareModal(url, title) {
+            const encodedUrl = encodeURIComponent(url);
+            const encodedTitle = encodeURIComponent(title);
+            
+            const modal = document.createElement('div');
+            modal.id = 'shareModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 15px; padding: 30px; max-width: 400px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: #333; font-size: 1.4rem;">Share Article</h3>
+                        <button onclick="closeShareModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
+                    </div>
+                    
+                    <p style="color: #666; margin-bottom: 20px; font-size: 0.95rem;">${title}</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                        <a href="https://wa.me/?text=${encodedTitle}%20${encodedUrl}" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #25D366; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: opacity 0.3s;"
+                           onmouseover="this.style.opacity='0.8'"
+                           onmouseout="this.style.opacity='1'">
+                            <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i>
+                            WhatsApp
+                        </a>
+                        
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #1877F2; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: opacity 0.3s;"
+                           onmouseover="this.style.opacity='0.8'"
+                           onmouseout="this.style.opacity='1'">
+                            <i class="fab fa-facebook-f" style="font-size: 1.2rem;"></i>
+                            Facebook
+                        </a>
+                        
+                        <a href="https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #1DA1F2; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: opacity 0.3s;"
+                           onmouseover="this.style.opacity='0.8'"
+                           onmouseout="this.style.opacity='1'">
+                            <i class="fab fa-twitter" style="font-size: 1.2rem;"></i>
+                            Twitter
+                        </a>
+                        
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}" 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #0A66C2; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: opacity 0.3s;"
+                           onmouseover="this.style.opacity='0.8'"
+                           onmouseout="this.style.opacity='1'">
+                            <i class="fab fa-linkedin-in" style="font-size: 1.2rem;"></i>
+                            LinkedIn
+                        </a>
+                        
+                        <a href="mailto:?subject=${encodedTitle}&body=Check out this article: ${encodedUrl}" 
+                           style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #666; color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: opacity 0.3s;"
+                           onmouseover="this.style.opacity='0.8'"
+                           onmouseout="this.style.opacity='1'">
+                            <i class="fas fa-envelope" style="font-size: 1.2rem;"></i>
+                            Email
+                        </a>
+                        
+                        <button onclick="copyShareLink('${url}', event); closeShareModal();" 
+                           style="display: flex; align-items: center; gap: 10px; padding: 12px; background: #c00; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: opacity 0.3s; font-family: 'Poppins', sans-serif;"
+                           onmouseover="this.style.opacity='0.8'"
+                           onmouseout="this.style.opacity='1'">
+                            <i class="fas fa-link" style="font-size: 1.2rem;"></i>
+                            Copy Link
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+            
+            // Close on background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeShareModal();
+                }
+            });
+        }
 
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideOut{ from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-        .share-btn:hover { background: #c00 !important; color: white !important; }
-    `;
-    document.head.appendChild(style);
+        // Close share modal
+        function closeShareModal() {
+            const modal = document.getElementById('shareModal');
+            if (modal) {
+                modal.style.animation = 'fadeOut 0.3s';
+                setTimeout(() => {
+                    modal.remove();
+                    document.body.style.overflow = 'auto';
+                }, 300);
+            }
+        }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        loadNews();
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => filterNews(btn.dataset.filter));
+        // Show notification
+        function showNotification(message, type = 'success') {
+            // Remove existing notification if any
+            const existing = document.getElementById('notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.id = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : '#dc3545'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10001;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+            
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            
+            .news-card:hover .share-buttons {
+                opacity: 1 !important;
+            }
+            
+            .share-btn:hover {
+                background: #c00 !important;
+                color: white !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing...');
+            loadNews();
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    filterNews(e.target.dataset.filter);
+                });
+            });
+
+
         });
-    });
-</script>
+    </script>
+    
+    <!-- Vercel Analytics (only loads on Vercel, not locally) -->
+    <script>
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        var s = document.createElement('script');
+        s.defer = true;
+        s.src = '/_vercel/insights/script.js';
+        document.head.appendChild(s);
+      }
+    </script>
 
+    <!-- General site scripts (navbar, hamburger menu, etc.) -->
+    <script src="script.js"></script>
 </body>
 </html>
